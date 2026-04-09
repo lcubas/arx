@@ -1,7 +1,7 @@
 {
   "name": "@arx/drizzle",
   "version": "0.0.1",
-  "description": "Drizzle ORM adapter for arx — supports PostgreSQL, MySQL, and SQLite",
+  "description": "Drizzle ORM adapter for @arx/core — supports PostgreSQL, MySQL, and SQLite",
   "keywords": ["authorization", "rbac", "drizzle", "drizzle-orm", "adapter", "typescript"],
   "license": "MIT",
   "type": "module",
@@ -36,16 +36,16 @@
   "files": ["dist", "README.md"],
   "sideEffects": false,
   "scripts": {
-    "build": "tsup src/index.ts src/schema/pg.ts src/schema/mysql.ts src/schema/sqlite.ts --format esm,cjs --dts --sourcemap --treeshake --no-splitting --clean --external drizzle-orm --external arx",
+    "build": "tsup src/index.ts src/schema/pg.ts src/schema/mysql.ts src/schema/sqlite.ts --format esm,cjs --dts --sourcemap --treeshake --no-splitting --clean --external drizzle-orm --external @arx/core",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "arx": "*",
+    "@arx/core": "*",
     "drizzle-orm": ">=0.30.0"
   },
   "devDependencies": {
-    "arx": "*",
+    "@arx/core": "*",
     "drizzle-orm": "^0.38.0",
     "tsup": "^8.0.0",
     "typescript": "^5.7.0",

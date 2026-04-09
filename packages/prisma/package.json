@@ -1,7 +1,7 @@
 {
   "name": "@arx/prisma",
   "version": "0.0.1",
-  "description": "Prisma adapter for arx — supports all databases Prisma supports",
+  "description": "Prisma adapter for @arx/core — supports all databases Prisma supports",
   "keywords": ["authorization", "rbac", "prisma", "adapter", "typescript"],
   "license": "MIT",
   "type": "module",
@@ -21,17 +21,17 @@
   "files": ["dist", "README.md"],
   "sideEffects": false,
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --treeshake --no-splitting --clean --external @prisma/client --external arx",
+    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --treeshake --no-splitting --clean --external @prisma/client --external @arx/core",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
     "@prisma/client": ">=5.0.0",
-    "arx": "*"
+    "@arx/core": "*"
   },
   "devDependencies": {
     "@prisma/client": "^5.0.0",
-    "arx": "*",
+    "@arx/core": "*",
     "tsup": "^8.0.0",
     "typescript": "^5.7.0",
     "vitest": "^2.0.0"
