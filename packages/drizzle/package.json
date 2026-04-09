@@ -35,6 +35,9 @@
   "types": "./dist/index.d.ts",
   "files": ["dist", "README.md"],
   "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup src/index.ts src/schema/pg.ts src/schema/mysql.ts src/schema/sqlite.ts --format esm,cjs --dts --sourcemap --treeshake --no-splitting --clean --external drizzle-orm --external @arx/core",
     "test": "vitest run",
@@ -42,7 +45,7 @@
   },
   "peerDependencies": {
     "@arx/core": "*",
-    "drizzle-orm": ">=0.30.0"
+    "drizzle-orm": ">=0.31.0"
   },
   "devDependencies": {
     "@arx/core": "*",

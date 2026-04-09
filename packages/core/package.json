@@ -28,6 +28,9 @@
   "types": "./dist/index.d.ts",
   "files": ["dist", "README.md"],
   "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --treeshake --no-splitting --clean",
     "test": "vitest run",
