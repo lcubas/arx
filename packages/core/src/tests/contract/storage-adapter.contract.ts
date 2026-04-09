@@ -7,7 +7,7 @@
  * test file.
  *
  * @example
- * // packages/prisma/src/__tests__/prisma-adapter.test.ts
+ * // packages/prisma/src/tests/prisma-adapter.test.ts
  * import { testStorageAdapterContract } from '@arx/core/testing'
  * import { PrismaAdapter } from '../adapter.js'
  *
@@ -17,7 +17,7 @@
  * })
  */
 
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { StorageAdapter } from '../../adapter.js';
 import {
   PermissionAlreadyExistsError,
@@ -42,8 +42,7 @@ export function testStorageAdapterContract(opts: StorageAdapterContractOptions):
 
   if (opts.reset) {
     const reset = opts.reset;
-    // biome-ignore lint/suspicious/noExplicitAny: vitest afterEach typing
-    (afterEach as any)(async () => reset());
+    afterEach(async () => reset());
   }
 
   // ─── Roles ─────────────────────────────────────────────────────────────────
