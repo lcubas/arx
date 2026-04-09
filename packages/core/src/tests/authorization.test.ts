@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { createAuthorization } from '../authorization.js';
+import { createAuthorization } from '../authorization';
 import {
   ArxError,
   PermissionAlreadyExistsError,
   PermissionNotFoundError,
   RoleAlreadyExistsError,
   RoleNotFoundError,
-} from '../errors.js';
-import { InMemoryAdapter } from '../in-memory-adapter.js';
+} from '../errors';
+import { InMemoryAdapter } from '../in-memory-adapter';
 
 function setup() {
   const adapter = new InMemoryAdapter();

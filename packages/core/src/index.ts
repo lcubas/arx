@@ -21,8 +21,8 @@
  */
 
 // ─── Primary entry point ───────────────────────────────────────────────────
-export { createAuthorization } from './authorization.js';
-export type { Authorization, AuthorizationConfig } from './authorization.js';
+export { createAuthorization } from './authorization';
+export type { Authorization, AuthorizationConfig } from './authorization';
 
 // ─── Domain entities ───────────────────────────────────────────────────────
 export type {
@@ -31,7 +31,7 @@ export type {
   Role,
   RoleAssignment,
   RolePermissionAssignment,
-} from './types.js';
+} from './types';
 
 // ─── Errors ────────────────────────────────────────────────────────────────
 export {
@@ -40,13 +40,13 @@ export {
   PermissionNotFoundError,
   RoleAlreadyExistsError,
   RoleNotFoundError,
-} from './errors.js';
+} from './errors';
 
 // ─── Adapter contract ──────────────────────────────────────────────────────
-export type { StorageAdapter } from './adapter.js';
+export type { StorageAdapter } from './adapter';
 
 // ─── Operation options ─────────────────────────────────────────────────────
-export type { CreatePermissionOptions, CreateRoleOptions } from './engine.js';
+export type { CreatePermissionOptions, CreateRoleOptions } from './engine';
 
 // ─── Testing adapter ───────────────────────────────────────────────────────
-export { InMemoryAdapter } from './in-memory-adapter.js';
+export { InMemoryAdapter } from './in-memory-adapter';

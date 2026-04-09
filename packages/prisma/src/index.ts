@@ -23,5 +23,5 @@
  * @packageDocumentation
  */
 
-export { PrismaAdapter } from './adapter.js';
-export type { PrismaClientForArx } from './adapter.js';
+export { PrismaAdapter } from './adapter';
+export type { PrismaClientForArx } from './adapter';

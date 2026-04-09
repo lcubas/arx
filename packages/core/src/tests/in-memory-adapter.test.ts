@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { InMemoryAdapter } from '../in-memory-adapter.js';
-import { testStorageAdapterContract } from './contract/storage-adapter.contract.js';
+import { InMemoryAdapter } from '../in-memory-adapter';
+import { testStorageAdapterContract } from './contract/storage-adapter.contract';
 
 // ─── Contract compliance ──────────────────────────────────────────────────────
 

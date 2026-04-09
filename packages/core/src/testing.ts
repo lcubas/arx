@@ -25,4 +25,4 @@
 export {
   testStorageAdapterContract,
   type StorageAdapterContractOptions,
-} from './tests/contract/storage-adapter.contract.js';
+} from './tests/contract/storage-adapter.contract';

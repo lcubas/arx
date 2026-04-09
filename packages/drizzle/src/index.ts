@@ -30,5 +30,5 @@
  * @packageDocumentation
  */
 
-export { DrizzleAdapter } from './adapter.js';
-export type { ArxDrizzleSchema } from './adapter.js';
+export { DrizzleAdapter } from './adapter';
+export type { ArxDrizzleSchema } from './adapter';

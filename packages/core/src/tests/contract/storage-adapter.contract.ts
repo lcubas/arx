@@ -9,7 +9,7 @@
  * @example
  * // packages/prisma/src/tests/prisma-adapter.test.ts
  * import { testStorageAdapterContract } from '@arx/core/testing'
- * import { PrismaAdapter } from '../adapter.js'
+ * import { PrismaAdapter } from '../adapter'
  *
  * testStorageAdapterContract({
  *   create: () => new PrismaAdapter(prisma),
@@ -18,13 +18,13 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import type { StorageAdapter } from '../../adapter.js';
+import type { StorageAdapter } from '../../adapter';
 import {
   PermissionAlreadyExistsError,
   PermissionNotFoundError,
   RoleAlreadyExistsError,
   RoleNotFoundError,
-} from '../../errors.js';
+} from '../../errors';
 
 export interface StorageAdapterContractOptions {
   /** Factory called before each test — must return a fresh, empty adapter. */

@@ -1,10 +1,10 @@
-import type { StorageAdapter } from './adapter.js';
+import type { StorageAdapter } from './adapter';
 import {
   AuthorizationEngine,
   type CreatePermissionOptions,
   type CreateRoleOptions,
-} from './engine.js';
-import type { Permission, Role } from './types.js';
+} from './engine';
+import type { Permission, Role } from './types';
 
 // ─── Configuration ────────────────────────────────────────────────────────────
 

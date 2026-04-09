@@ -1,4 +1,4 @@
-import type { Permission, Role } from './types.js';
+import type { Permission, Role } from './types';
 
 /**
  * The storage adapter contract — the port that decouples the arx

@@ -1,11 +1,11 @@
-import type { StorageAdapter } from './adapter.js';
+import type { StorageAdapter } from './adapter';
 import {
   PermissionAlreadyExistsError,
   PermissionNotFoundError,
   RoleAlreadyExistsError,
   RoleNotFoundError,
-} from './errors.js';
-import type { Permission, Role } from './types.js';
+} from './errors';
+import type { Permission, Role } from './types';
 
 /**
  * In-memory implementation of StorageAdapter.
