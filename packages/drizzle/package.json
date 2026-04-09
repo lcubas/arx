@@ -48,7 +48,7 @@
     "drizzle-orm": ">=0.31.0"
   },
   "devDependencies": {
-    "@arx/core": "*",
+    "@arx/core": "workspace:*",
     "drizzle-orm": "^0.38.0",
     "tsup": "^8.0.0",
     "typescript": "^5.7.0",
