@@ -5,7 +5,8 @@
  * - Domain entity types (`Role`, `Permission`, assignment types)
  * - Typed error classes (`ArxError`, `RoleNotFoundError`, etc.)
  * - The `StorageAdapter` contract (implement this to build a custom adapter)
- * - `InMemoryAdapter` (for use in tests)
+ * - Operation option types (`CreateRoleOptions`, `CreatePermissionOptions`)
+ * - `InMemoryAdapter` (reference implementation for tests)
  *
  * @packageDocumentation
  */
@@ -30,6 +31,9 @@ export {
 
 // ─── Adapter contract ──────────────────────────────────────────────────────
 export type { StorageAdapter } from './adapter.js';
+
+// ─── Operation options ─────────────────────────────────────────────────────
+export type { CreatePermissionOptions, CreateRoleOptions } from './engine.js';
 
 // ─── Testing adapter ───────────────────────────────────────────────────────
 export { InMemoryAdapter } from './in-memory-adapter.js';
