@@ -1,0 +1,43 @@
+{
+  "name": "arx-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "npm@10.9.4",
+  "description": "Monorepo for arx — modern authorization library for TypeScript",
+  "workspaces": ["packages/*"],
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build && changeset publish",
+    "prepare": "simple-git-hooks"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@changesets/cli": "^2.27.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "commitlint": "^19.0.0",
+    "lint-staged": "^15.2.0",
+    "simple-git-hooks": "^2.11.0",
+    "tsup": "^8.0.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.0.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged",
+    "commit-msg": "npx --no -- commitlint --edit $1"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,jsonc}": "biome check --write --no-errors-on-unmatched"
+  }
+}

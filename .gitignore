@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+
+# Turbo cache
+.turbo/
+
+# Test coverage
+coverage/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Editor artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# npm lockfile (pnpm is the intended package manager)
+package-lock.json
+
+# tsup temp bundled config artifacts
+**/tsup.config.bundled_*
+**/_tmp_*
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Changesets (keep the folder, ignore stale files)
+.changeset/*.md
+!.changeset/config.json
+!.changeset/README.md

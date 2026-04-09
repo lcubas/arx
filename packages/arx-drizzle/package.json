@@ -1,0 +1,54 @@
+{
+  "name": "@arx/drizzle",
+  "version": "0.0.1",
+  "description": "Drizzle ORM adapter for arx — supports PostgreSQL, MySQL, and SQLite",
+  "keywords": ["authorization", "rbac", "drizzle", "drizzle-orm", "adapter", "typescript"],
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./schema/pg": {
+      "types": "./dist/schema/pg.d.ts",
+      "import": "./dist/schema/pg.js",
+      "require": "./dist/schema/pg.cjs"
+    },
+    "./schema/mysql": {
+      "types": "./dist/schema/mysql.d.ts",
+      "import": "./dist/schema/mysql.js",
+      "require": "./dist/schema/mysql.cjs"
+    },
+    "./schema/sqlite": {
+      "types": "./dist/schema/sqlite.d.ts",
+      "import": "./dist/schema/sqlite.js",
+      "require": "./dist/schema/sqlite.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup src/index.ts src/schema/pg.ts src/schema/mysql.ts src/schema/sqlite.ts --format esm,cjs --dts --sourcemap --treeshake --no-splitting --clean --external drizzle-orm --external arx",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "arx": "*",
+    "drizzle-orm": ">=0.30.0"
+  },
+  "devDependencies": {
+    "arx": "*",
+    "drizzle-orm": "^0.38.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.0.0"
+  }
+}
