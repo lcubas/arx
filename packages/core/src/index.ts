@@ -1,11 +1,35 @@
 /**
- * arx — Modern authorization library for Node.js and TypeScript
+ * @arx/core — Modern authorization library for Node.js and TypeScript.
  *
- * Core package: domain entities, adapter contract, authorization engine, and public API.
- * No ORM dependency. Bring your own adapter.
+ * This package exports:
+ * - Domain entity types (`Role`, `Permission`, assignment types)
+ * - Typed error classes (`ArxError`, `RoleNotFoundError`, etc.)
+ * - The `StorageAdapter` contract (implement this to build a custom adapter)
+ * - `InMemoryAdapter` (for use in tests)
  *
  * @packageDocumentation
  */
 
-// Placeholder — implementation begins in Phase 2.2 (core domain)
-export {};
+// ─── Domain entities ───────────────────────────────────────────────────────
+export type {
+  Permission,
+  PermissionAssignment,
+  Role,
+  RoleAssignment,
+  RolePermissionAssignment,
+} from './types.js';
+
+// ─── Errors ────────────────────────────────────────────────────────────────
+export {
+  ArxError,
+  PermissionAlreadyExistsError,
+  PermissionNotFoundError,
+  RoleAlreadyExistsError,
+  RoleNotFoundError,
+} from './errors.js';
+
+// ─── Adapter contract ──────────────────────────────────────────────────────
+export type { StorageAdapter } from './adapter.js';
+
+// ─── Testing adapter ───────────────────────────────────────────────────────
+export { InMemoryAdapter } from './in-memory-adapter.js';
