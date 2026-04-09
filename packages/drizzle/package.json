@@ -4,6 +4,15 @@
   "description": "Drizzle ORM adapter for @arx/core — supports PostgreSQL, MySQL, and SQLite",
   "keywords": ["authorization", "rbac", "drizzle", "drizzle-orm", "adapter", "typescript"],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/arx.git",
+    "directory": "packages/drizzle"
+  },
+  "homepage": "https://github.com/your-org/arx/tree/main/packages/drizzle#readme",
+  "bugs": {
+    "url": "https://github.com/your-org/arx/issues"
+  },
   "type": "module",
   "engines": {
     "node": ">=18"

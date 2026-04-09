@@ -4,6 +4,15 @@
   "description": "Prisma adapter for @arx/core — supports all databases Prisma supports",
   "keywords": ["authorization", "rbac", "prisma", "adapter", "typescript"],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/arx.git",
+    "directory": "packages/prisma"
+  },
+  "homepage": "https://github.com/your-org/arx/tree/main/packages/prisma#readme",
+  "bugs": {
+    "url": "https://github.com/your-org/arx/issues"
+  },
   "type": "module",
   "engines": {
     "node": ">=18"
