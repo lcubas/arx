@@ -1,11 +1,27 @@
 /**
- * @arx/prisma — Prisma adapter for arx
+ * @arx/prisma — Prisma adapter for the arx authorization library.
  *
- * Supports all databases Prisma supports: PostgreSQL, MySQL, SQLite,
- * SQL Server, MongoDB, CockroachDB.
+ * ## Quick start
+ *
+ * ```ts
+ * import { PrismaClient } from '@prisma/client'
+ * import { createAuthorization } from '@arx/core'
+ * import { PrismaAdapter } from '@arx/prisma'
+ *
+ * const prisma = new PrismaClient()
+ *
+ * const { can, assignRole, createRole } = createAuthorization({
+ *   adapter: new PrismaAdapter(prisma),
+ * })
+ *
+ * await createRole('editor', { permissions: ['edit:post', 'view:post'] })
+ * await assignRole('user-1', 'editor')
+ *
+ * const allowed = await can('user-1', 'edit:post') // true
+ * ```
  *
  * @packageDocumentation
  */
 
-// Placeholder — implementation begins in Phase 2.5 (Prisma adapter)
-export {};
+export { PrismaAdapter } from './adapter.js';
+export type { PrismaClientForArx } from './adapter.js';

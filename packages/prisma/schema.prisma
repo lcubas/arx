@@ -1,0 +1,63 @@
+// This is the reference Prisma schema for @arx/prisma.
+// Copy these models into your own schema.prisma and run `prisma migrate dev`.
+//
+// All models are prefixed with "Arx" to avoid naming collisions with models
+// you already have in your schema.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // also works with "mysql" | "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model ArxRole {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  createdAt   DateTime @default(now())
+
+  permissions ArxRolePermission[]
+  users       ArxUserRole[]
+}
+
+model ArxPermission {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  createdAt   DateTime @default(now())
+
+  roles ArxRolePermission[]
+  users ArxUserPermission[]
+}
+
+model ArxRolePermission {
+  roleId       String
+  permissionId String
+  assignedAt   DateTime @default(now())
+
+  role       ArxRole       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission ArxPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model ArxUserRole {
+  userId     String
+  roleId     String
+  assignedAt DateTime @default(now())
+
+  role ArxRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model ArxUserPermission {
+  userId       String
+  permissionId String
+  assignedAt   DateTime @default(now())
+
+  permission ArxPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([userId, permissionId])
+}
