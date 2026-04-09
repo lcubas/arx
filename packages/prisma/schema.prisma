@@ -1,8 +1,8 @@
 // This is the reference Prisma schema for @arx/prisma.
 // Copy these models into your own schema.prisma and run `prisma migrate dev`.
 //
-// All models are prefixed with "Arx" to avoid naming collisions with models
-// you already have in your schema.
+// If you already have a model named `Role` or `Permission` in your schema,
+// rename the conflicting model and update its @@map accordingly.
 
 generator client {
   provider = "prisma-client-js"
@@ -13,51 +13,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model ArxRole {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  createdAt   DateTime @default(now())
+model Role {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
 
-  permissions ArxRolePermission[]
-  users       ArxUserRole[]
+  permissions RolePermission[]
+  users       UserRole[]
+
+  @@map("roles")
 }
 
-model ArxPermission {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  createdAt   DateTime @default(now())
+model Permission {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
 
-  roles ArxRolePermission[]
-  users ArxUserPermission[]
+  roles RolePermission[]
+  users UserPermission[]
+
+  @@map("permissions")
 }
 
-model ArxRolePermission {
+model RolePermission {
   roleId       String
   permissionId String
   assignedAt   DateTime @default(now())
 
-  role       ArxRole       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission ArxPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   @@id([roleId, permissionId])
+  @@map("role_permissions")
 }
 
-model ArxUserRole {
+model UserRole {
   userId     String
   roleId     String
   assignedAt DateTime @default(now())
 
-  role ArxRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@id([userId, roleId])
+  @@map("user_roles")
 }
 
-model ArxUserPermission {
+model UserPermission {
   userId       String
   permissionId String
   assignedAt   DateTime @default(now())
 
-  permission ArxPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   @@id([userId, permissionId])
+  @@map("user_permissions")
 }

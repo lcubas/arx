@@ -5,23 +5,24 @@ import {
   RoleAlreadyExistsError,
   RoleNotFoundError,
 } from '@arx/core';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 // ─── Record shapes ────────────────────────────────────────────────────────────
 
-type ArxRoleRecord = {
+type RoleRecord = {
   id: string;
   name: string;
   createdAt: Date;
 };
 
-type ArxPermissionRecord = {
+type PermissionRecord = {
   id: string;
   name: string;
   createdAt: Date;
 };
 
-type ArxRoleWithPermissions = ArxRoleRecord & {
-  permissions: Array<{ permission: ArxPermissionRecord }>;
+type RoleWithPermissions = RoleRecord & {
+  permissions: Array<{ permission: PermissionRecord }>;
 };
 
 // ─── Minimal Prisma client interface ─────────────────────────────────────────
@@ -43,29 +44,26 @@ type ArxRoleWithPermissions = ArxRoleRecord & {
  * const adapter = new PrismaAdapter(new PrismaClient())
  */
 export interface PrismaClientForArx {
-  arxRole: {
-    create(args: { data: { name: string } }): Promise<ArxRoleRecord>;
-    findUnique(args: { where: { name: string } }): Promise<ArxRoleRecord | null>;
-    delete(args: { where: { name: string } }): Promise<ArxRoleRecord>;
-    // Overload 1: plain list (no include)
-    findMany(args: { where: { users: { some: { userId: string } } } }): Promise<ArxRoleRecord[]>;
-    // Overload 2: with permissions eagerly loaded
+  role: {
+    create(args: { data: { name: string } }): Promise<RoleRecord>;
+    findUnique(args: { where: { name: string } }): Promise<RoleRecord | null>;
+    delete(args: { where: { name: string } }): Promise<RoleRecord>;
+    // More-specific overload first: with include → returns full shape
     findMany(args: {
       where: { users: { some: { userId: string } } };
       include: { permissions: { include: { permission: true } } };
-    }): Promise<ArxRoleWithPermissions[]>;
-  };
-  arxPermission: {
-    create(args: { data: { name: string } }): Promise<ArxPermissionRecord>;
-    findUnique(args: { where: { name: string } }): Promise<ArxPermissionRecord | null>;
-    delete(args: { where: { name: string } }): Promise<ArxPermissionRecord>;
+    }): Promise<RoleWithPermissions[]>;
+    // Fallback: without include → plain records
     findMany(args: {
-      where:
-        | { roles: { some: { role: { name: string } } } }
-        | { users: { some: { userId: string } } };
-    }): Promise<ArxPermissionRecord[]>;
+      where: { users: { some: { userId: string } } };
+    }): Promise<RoleRecord[]>;
   };
-  arxRolePermission: {
+  permission: {
+    create(args: { data: { name: string } }): Promise<PermissionRecord>;
+    findUnique(args: { where: { name: string } }): Promise<PermissionRecord | null>;
+    delete(args: { where: { name: string } }): Promise<PermissionRecord>;
+  };
+  rolePermission: {
     upsert(args: {
       where: { roleId_permissionId: { roleId: string; permissionId: string } };
       create: { roleId: string; permissionId: string };
@@ -75,9 +73,9 @@ export interface PrismaClientForArx {
     findMany(args: {
       where: { role: { name: string } };
       include: { permission: true };
-    }): Promise<Array<{ permission: ArxPermissionRecord }>>;
+    }): Promise<Array<{ permission: PermissionRecord }>>;
   };
-  arxUserRole: {
+  userRole: {
     upsert(args: {
       where: { userId_roleId: { userId: string; roleId: string } };
       create: { userId: string; roleId: string };
@@ -85,7 +83,7 @@ export interface PrismaClientForArx {
     }): Promise<unknown>;
     deleteMany(args: { where: { userId: string; roleId: string } }): Promise<unknown>;
   };
-  arxUserPermission: {
+  userPermission: {
     upsert(args: {
       where: { userId_permissionId: { userId: string; permissionId: string } };
       create: { userId: string; permissionId: string };
@@ -95,28 +93,22 @@ export interface PrismaClientForArx {
     findMany(args: {
       where: { userId: string };
       include: { permission: true };
-    }): Promise<Array<{ permission: ArxPermissionRecord }>>;
+    }): Promise<Array<{ permission: PermissionRecord }>>;
   };
 }
 
 // ─── Prisma error codes ───────────────────────────────────────────────────────
 
-/** Unique constraint violation — thrown when creating a duplicate record. */
 const PRISMA_UNIQUE_CONSTRAINT = 'P2002';
-/** Record not found — thrown by operations that require an existing record. */
 const PRISMA_NOT_FOUND = 'P2025';
-
-function isPrismaError(err: unknown): err is { code: string } {
-  return typeof err === 'object' && err !== null && 'code' in err;
-}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function toRole(record: ArxRoleRecord): Role {
+function toRole(record: RoleRecord): Role {
   return { id: record.id, name: record.name, createdAt: record.createdAt };
 }
 
-function toPermission(record: ArxPermissionRecord): Permission {
+function toPermission(record: PermissionRecord): Permission {
   return { id: record.id, name: record.name, createdAt: record.createdAt };
 }
 
@@ -147,10 +139,10 @@ export class PrismaAdapter implements StorageAdapter {
 
   async createRole(name: string): Promise<Role> {
     try {
-      const record = await this.prisma.arxRole.create({ data: { name } });
+      const record = await this.prisma.role.create({ data: { name } });
       return toRole(record);
     } catch (err) {
-      if (isPrismaError(err) && err.code === PRISMA_UNIQUE_CONSTRAINT) {
+      if (err instanceof PrismaClientKnownRequestError && err.code === PRISMA_UNIQUE_CONSTRAINT) {
         throw new RoleAlreadyExistsError(name);
       }
       throw err;
@@ -158,15 +150,17 @@ export class PrismaAdapter implements StorageAdapter {
   }
 
   async findRole(name: string): Promise<Role | null> {
-    const record = await this.prisma.arxRole.findUnique({ where: { name } });
+    const record = await this.prisma.role.findUnique({ where: { name } });
     return record ? toRole(record) : null;
   }
 
   async deleteRole(name: string): Promise<void> {
     try {
-      await this.prisma.arxRole.delete({ where: { name } });
+      await this.prisma.role.delete({ where: { name } });
     } catch (err) {
-      if (isPrismaError(err) && err.code === PRISMA_NOT_FOUND) return;
+      if (err instanceof PrismaClientKnownRequestError && err.code === PRISMA_NOT_FOUND) {
+        return;
+      }
       throw err;
     }
   }
@@ -175,10 +169,10 @@ export class PrismaAdapter implements StorageAdapter {
 
   async createPermission(name: string): Promise<Permission> {
     try {
-      const record = await this.prisma.arxPermission.create({ data: { name } });
+      const record = await this.prisma.permission.create({ data: { name } });
       return toPermission(record);
     } catch (err) {
-      if (isPrismaError(err) && err.code === PRISMA_UNIQUE_CONSTRAINT) {
+      if (err instanceof PrismaClientKnownRequestError && err.code === PRISMA_UNIQUE_CONSTRAINT) {
         throw new PermissionAlreadyExistsError(name);
       }
       throw err;
@@ -186,15 +180,17 @@ export class PrismaAdapter implements StorageAdapter {
   }
 
   async findPermission(name: string): Promise<Permission | null> {
-    const record = await this.prisma.arxPermission.findUnique({ where: { name } });
+    const record = await this.prisma.permission.findUnique({ where: { name } });
     return record ? toPermission(record) : null;
   }
 
   async deletePermission(name: string): Promise<void> {
     try {
-      await this.prisma.arxPermission.delete({ where: { name } });
+      await this.prisma.permission.delete({ where: { name } });
     } catch (err) {
-      if (isPrismaError(err) && err.code === PRISMA_NOT_FOUND) return;
+      if (err instanceof PrismaClientKnownRequestError && err.code === PRISMA_NOT_FOUND) {
+        return;
+      }
       throw err;
     }
   }
@@ -203,14 +199,14 @@ export class PrismaAdapter implements StorageAdapter {
 
   async grantPermissionToRole(roleName: string, permissionName: string): Promise<void> {
     const [role, permission] = await Promise.all([
-      this.prisma.arxRole.findUnique({ where: { name: roleName } }),
-      this.prisma.arxPermission.findUnique({ where: { name: permissionName } }),
+      this.prisma.role.findUnique({ where: { name: roleName } }),
+      this.prisma.permission.findUnique({ where: { name: permissionName } }),
     ]);
 
     if (!role) throw new RoleNotFoundError(roleName);
     if (!permission) throw new PermissionNotFoundError(permissionName);
 
-    await this.prisma.arxRolePermission.upsert({
+    await this.prisma.rolePermission.upsert({
       where: { roleId_permissionId: { roleId: role.id, permissionId: permission.id } },
       create: { roleId: role.id, permissionId: permission.id },
       update: {},
@@ -219,20 +215,20 @@ export class PrismaAdapter implements StorageAdapter {
 
   async revokePermissionFromRole(roleName: string, permissionName: string): Promise<void> {
     const [role, permission] = await Promise.all([
-      this.prisma.arxRole.findUnique({ where: { name: roleName } }),
-      this.prisma.arxPermission.findUnique({ where: { name: permissionName } }),
+      this.prisma.role.findUnique({ where: { name: roleName } }),
+      this.prisma.permission.findUnique({ where: { name: permissionName } }),
     ]);
 
     // Idempotent — if either side doesn't exist, there's nothing to revoke
     if (!role || !permission) return;
 
-    await this.prisma.arxRolePermission.deleteMany({
+    await this.prisma.rolePermission.deleteMany({
       where: { roleId: role.id, permissionId: permission.id },
     });
   }
 
   async getPermissionsForRole(roleName: string): Promise<Permission[]> {
-    const rows = await this.prisma.arxRolePermission.findMany({
+    const rows = await this.prisma.rolePermission.findMany({
       where: { role: { name: roleName } },
       include: { permission: true },
     });
@@ -242,10 +238,10 @@ export class PrismaAdapter implements StorageAdapter {
   // ─── User ↔ Role ───────────────────────────────────────────────────────────
 
   async assignRoleToUser(userId: string, roleName: string): Promise<void> {
-    const role = await this.prisma.arxRole.findUnique({ where: { name: roleName } });
+    const role = await this.prisma.role.findUnique({ where: { name: roleName } });
     if (!role) throw new RoleNotFoundError(roleName);
 
-    await this.prisma.arxUserRole.upsert({
+    await this.prisma.userRole.upsert({
       where: { userId_roleId: { userId, roleId: role.id } },
       create: { userId, roleId: role.id },
       update: {},
@@ -253,14 +249,14 @@ export class PrismaAdapter implements StorageAdapter {
   }
 
   async revokeRoleFromUser(userId: string, roleName: string): Promise<void> {
-    const role = await this.prisma.arxRole.findUnique({ where: { name: roleName } });
+    const role = await this.prisma.role.findUnique({ where: { name: roleName } });
     if (!role) return; // Idempotent
 
-    await this.prisma.arxUserRole.deleteMany({ where: { userId, roleId: role.id } });
+    await this.prisma.userRole.deleteMany({ where: { userId, roleId: role.id } });
   }
 
   async getRolesForUser(userId: string): Promise<Role[]> {
-    const records = await this.prisma.arxRole.findMany({
+    const records = await this.prisma.role.findMany({
       where: { users: { some: { userId } } },
     });
     return records.map(toRole);
@@ -269,12 +265,10 @@ export class PrismaAdapter implements StorageAdapter {
   // ─── User ↔ Permission (direct) ────────────────────────────────────────────
 
   async grantPermissionToUser(userId: string, permissionName: string): Promise<void> {
-    const permission = await this.prisma.arxPermission.findUnique({
-      where: { name: permissionName },
-    });
+    const permission = await this.prisma.permission.findUnique({ where: { name: permissionName } });
     if (!permission) throw new PermissionNotFoundError(permissionName);
 
-    await this.prisma.arxUserPermission.upsert({
+    await this.prisma.userPermission.upsert({
       where: { userId_permissionId: { userId, permissionId: permission.id } },
       create: { userId, permissionId: permission.id },
       update: {},
@@ -282,18 +276,16 @@ export class PrismaAdapter implements StorageAdapter {
   }
 
   async revokePermissionFromUser(userId: string, permissionName: string): Promise<void> {
-    const permission = await this.prisma.arxPermission.findUnique({
-      where: { name: permissionName },
-    });
+    const permission = await this.prisma.permission.findUnique({ where: { name: permissionName } });
     if (!permission) return; // Idempotent
 
-    await this.prisma.arxUserPermission.deleteMany({
+    await this.prisma.userPermission.deleteMany({
       where: { userId, permissionId: permission.id },
     });
   }
 
   async getDirectPermissionsForUser(userId: string): Promise<Permission[]> {
-    const rows = await this.prisma.arxUserPermission.findMany({
+    const rows = await this.prisma.userPermission.findMany({
       where: { userId },
       include: { permission: true },
     });
@@ -311,11 +303,11 @@ export class PrismaAdapter implements StorageAdapter {
    */
   async getEffectivePermissions(userId: string): Promise<Permission[]> {
     const [directRows, roles] = await Promise.all([
-      this.prisma.arxUserPermission.findMany({
+      this.prisma.userPermission.findMany({
         where: { userId },
         include: { permission: true },
       }),
-      this.prisma.arxRole.findMany({
+      this.prisma.role.findMany({
         where: { users: { some: { userId } } },
         include: { permissions: { include: { permission: true } } },
       }),
@@ -324,7 +316,7 @@ export class PrismaAdapter implements StorageAdapter {
     const seen = new Set<string>();
     const result: Permission[] = [];
 
-    const collect = (record: ArxPermissionRecord) => {
+    const collect = (record: PermissionRecord) => {
       if (!seen.has(record.id)) {
         seen.add(record.id);
         result.push(toPermission(record));
