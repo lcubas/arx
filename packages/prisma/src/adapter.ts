@@ -7,8 +7,6 @@ import {
 } from '@arx/core';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
-// ─── Record shapes ────────────────────────────────────────────────────────────
-
 type RoleRecord = {
   id: string;
   name: string;
@@ -25,17 +23,13 @@ type RoleWithPermissions = RoleRecord & {
   permissions: Array<{ permission: PermissionRecord }>;
 };
 
-// ─── Minimal Prisma client interface ─────────────────────────────────────────
-//
-// Instead of importing PrismaClient directly (which would force consumers to
-// match a specific @prisma/client version at import time), we type only the
-// subset of the generated client that PrismaAdapter actually uses.
-//
-// Pass your generated `new PrismaClient()` instance — it satisfies this
-// interface as long as the Arx models are present in your schema.
-
 /**
  * The minimal interface of the Prisma client that `PrismaAdapter` requires.
+ * Instead of importing PrismaClient directly (which would force consumers to
+ * match a specific @prisma/client version at import time), we type only the
+ * subset of the generated client that PrismaAdapter actually uses.
+ * Pass your generated `new PrismaClient()` instance — it satisfies this
+ * interface as long as the Arx models are present in your schema.
  *
  * @example
  * import { PrismaClient } from '@prisma/client'
@@ -97,12 +91,12 @@ export interface PrismaClientForArx {
   };
 }
 
-// ─── Prisma error codes ───────────────────────────────────────────────────────
+// Prisma error codes
 
 const PRISMA_UNIQUE_CONSTRAINT = 'P2002';
 const PRISMA_NOT_FOUND = 'P2025';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 
 function toRole(record: RoleRecord): Role {
   return { id: record.id, name: record.name, createdAt: record.createdAt };
@@ -111,8 +105,6 @@ function toRole(record: RoleRecord): Role {
 function toPermission(record: PermissionRecord): Permission {
   return { id: record.id, name: record.name, createdAt: record.createdAt };
 }
-
-// ─── Adapter ──────────────────────────────────────────────────────────────────
 
 /**
  * Prisma implementation of the arx `StorageAdapter`.
@@ -134,8 +126,6 @@ function toPermission(record: PermissionRecord): Permission {
  */
 export class PrismaAdapter implements StorageAdapter {
   constructor(private readonly prisma: PrismaClientForArx) {}
-
-  // ─── Roles ─────────────────────────────────────────────────────────────────
 
   async createRole(name: string): Promise<Role> {
     try {
@@ -165,8 +155,6 @@ export class PrismaAdapter implements StorageAdapter {
     }
   }
 
-  // ─── Permissions ───────────────────────────────────────────────────────────
-
   async createPermission(name: string): Promise<Permission> {
     try {
       const record = await this.prisma.permission.create({ data: { name } });
@@ -194,8 +182,6 @@ export class PrismaAdapter implements StorageAdapter {
       throw err;
     }
   }
-
-  // ─── Role ↔ Permission ─────────────────────────────────────────────────────
 
   async grantPermissionToRole(roleName: string, permissionName: string): Promise<void> {
     const [role, permission] = await Promise.all([
@@ -235,8 +221,6 @@ export class PrismaAdapter implements StorageAdapter {
     return rows.map((row) => toPermission(row.permission));
   }
 
-  // ─── User ↔ Role ───────────────────────────────────────────────────────────
-
   async assignRoleToUser(userId: string, roleName: string): Promise<void> {
     const role = await this.prisma.role.findUnique({ where: { name: roleName } });
     if (!role) throw new RoleNotFoundError(roleName);
@@ -261,8 +245,6 @@ export class PrismaAdapter implements StorageAdapter {
     });
     return records.map(toRole);
   }
-
-  // ─── User ↔ Permission (direct) ────────────────────────────────────────────
 
   async grantPermissionToUser(userId: string, permissionName: string): Promise<void> {
     const permission = await this.prisma.permission.findUnique({ where: { name: permissionName } });
@@ -291,8 +273,6 @@ export class PrismaAdapter implements StorageAdapter {
     });
     return rows.map((row) => toPermission(row.permission));
   }
-
-  // ─── Optional optimization ─────────────────────────────────────────────────
 
   /**
    * Resolve all effective permissions for a user in two parallel queries:

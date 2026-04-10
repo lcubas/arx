@@ -6,8 +6,6 @@ import {
 } from './engine';
 import type { Permission, Role } from './types';
 
-// ─── Configuration ────────────────────────────────────────────────────────────
-
 /**
  * Configuration for `createAuthorization`.
  */
@@ -21,8 +19,6 @@ export interface AuthorizationConfig {
    */
   adapter: StorageAdapter;
 }
-
-// ─── Public API surface ───────────────────────────────────────────────────────
 
 /**
  * The authorization object returned by `createAuthorization`.
@@ -182,8 +178,6 @@ export interface Authorization {
   getRolePermissions(roleName: string): Promise<Permission[]>;
 }
 
-// ─── Factory ──────────────────────────────────────────────────────────────────
-
 /**
  * Create an authorization instance bound to the given adapter.
  *
@@ -232,7 +226,7 @@ export function createAuthorization(config: AuthorizationConfig): Authorization 
     assignPermission: (userId, permissionName) => engine.assignPermission(userId, permissionName),
     revokePermission: (userId, permissionName) => engine.revokePermission(userId, permissionName),
 
-    // Role ↔ Permission
+    // Role - Permission
     grantPermissionToRole: (roleName, permissionName) =>
       engine.grantPermissionToRole(roleName, permissionName),
     revokePermissionFromRole: (roleName, permissionName) =>

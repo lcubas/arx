@@ -61,8 +61,6 @@ export class InMemoryAdapter implements StorageAdapter {
     }
   }
 
-  // ─── Permissions ───────────────────────────────────────────────────────────
-
   async createPermission(name: string): Promise<Permission> {
     if (this.permissions.has(name)) {
       throw new PermissionAlreadyExistsError(name);
@@ -92,8 +90,6 @@ export class InMemoryAdapter implements StorageAdapter {
     }
   }
 
-  // ─── Role ↔ Permission ─────────────────────────────────────────────────────
-
   async grantPermissionToRole(roleName: string, permissionName: string): Promise<void> {
     if (!this.roles.has(roleName)) throw new RoleNotFoundError(roleName);
     if (!this.permissions.has(permissionName)) throw new PermissionNotFoundError(permissionName);
@@ -115,8 +111,6 @@ export class InMemoryAdapter implements StorageAdapter {
       .filter((p): p is Permission => p !== undefined);
   }
 
-  // ─── User ↔ Role ───────────────────────────────────────────────────────────
-
   async assignRoleToUser(userId: string, roleName: string): Promise<void> {
     if (!this.roles.has(roleName)) throw new RoleNotFoundError(roleName);
 
@@ -134,8 +128,6 @@ export class InMemoryAdapter implements StorageAdapter {
     if (!names) return [];
     return [...names].map((n) => this.roles.get(n)).filter((r): r is Role => r !== undefined);
   }
-
-  // ─── User ↔ Permission (direct) ────────────────────────────────────────────
 
   async grantPermissionToUser(userId: string, permissionName: string): Promise<void> {
     if (!this.permissions.has(permissionName)) throw new PermissionNotFoundError(permissionName);
@@ -157,8 +149,6 @@ export class InMemoryAdapter implements StorageAdapter {
       .filter((p): p is Permission => p !== undefined);
   }
 
-  // ─── Optional optimization ─────────────────────────────────────────────────
-
   async getEffectivePermissions(userId: string): Promise<Permission[]> {
     const roleNames = this.userRoles.get(userId) ?? new Set<string>();
     const directPermNames = this.userPermissions.get(userId) ?? new Set<string>();
@@ -176,8 +166,6 @@ export class InMemoryAdapter implements StorageAdapter {
       .map((n) => this.permissions.get(n))
       .filter((p): p is Permission => p !== undefined);
   }
-
-  // ─── Test utilities ────────────────────────────────────────────────────────
 
   /**
    * Reset all stored data.

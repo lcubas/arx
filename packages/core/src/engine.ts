@@ -7,8 +7,6 @@ import {
 } from './errors';
 import type { Permission, Role } from './types';
 
-// ─── Option types (public — appear in the createAuthorization API) ────────────
-
 export interface CreateRoleOptions {
   /**
    * What to do if the role already exists.
@@ -32,8 +30,6 @@ export interface CreatePermissionOptions {
   ifExists?: 'throw' | 'ignore';
 }
 
-// ─── Engine ───────────────────────────────────────────────────────────────────
-
 /**
  * The authorization engine.
  *
@@ -46,8 +42,6 @@ export interface CreatePermissionOptions {
  */
 export class AuthorizationEngine {
   constructor(private readonly adapter: StorageAdapter) {}
-
-  // ─── Permission checks ─────────────────────────────────────────────────────
 
   /**
    * Check whether a user has a specific permission.
@@ -107,8 +101,6 @@ export class AuthorizationEngine {
     const roles = await this.adapter.getRolesForUser(userId);
     return roles.some((r) => r.name === roleName);
   }
-
-  // ─── Role management ───────────────────────────────────────────────────────
 
   /**
    * Create a new role.
@@ -170,8 +162,6 @@ export class AuthorizationEngine {
   async revokeRole(userId: string, roleName: string): Promise<void> {
     await this.adapter.revokeRoleFromUser(userId, roleName);
   }
-
-  // ─── Permission management ─────────────────────────────────────────────────
 
   /**
    * Create a new permission.
@@ -264,8 +254,6 @@ export class AuthorizationEngine {
     await this.adapter.revokePermissionFromUser(userId, permissionName);
   }
 
-  // ─── Role ↔ Permission ─────────────────────────────────────────────────────
-
   /**
    * Grant a permission to a role.
    * @throws {RoleNotFoundError} if the role does not exist.
@@ -289,8 +277,6 @@ export class AuthorizationEngine {
   async getRolePermissions(roleName: string): Promise<Permission[]> {
     return this.adapter.getPermissionsForRole(roleName);
   }
-
-  // ─── Private helpers ───────────────────────────────────────────────────────
 
   /**
    * Resolve the full set of effective permission names for a user.

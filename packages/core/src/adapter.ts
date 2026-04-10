@@ -31,8 +31,6 @@ import type { Permission, Role } from './types';
  * missing. See `@arx/core` error classes for the full list.
  */
 export interface StorageAdapter {
-  // ─── Roles ─────────────────────────────────────────────────────────────────
-
   /**
    * Create a new role with the given name.
    * @throws {RoleAlreadyExistsError} if a role with this name already exists.
@@ -51,8 +49,6 @@ export interface StorageAdapter {
    * No-op if the role does not exist.
    */
   deleteRole(name: string): Promise<void>;
-
-  // ─── Permissions ───────────────────────────────────────────────────────────
 
   /**
    * Create a new permission with the given name.
@@ -73,8 +69,6 @@ export interface StorageAdapter {
    */
   deletePermission(name: string): Promise<void>;
 
-  // ─── Role ↔ Permission ─────────────────────────────────────────────────────
-
   /**
    * Grant a permission to a role. Idempotent.
    * @throws {RoleNotFoundError} if the role does not exist.
@@ -93,8 +87,6 @@ export interface StorageAdapter {
    */
   getPermissionsForRole(roleName: string): Promise<Permission[]>;
 
-  // ─── User ↔ Role ───────────────────────────────────────────────────────────
-
   /**
    * Assign a role to a user. Idempotent.
    * @throws {RoleNotFoundError} if the role does not exist.
@@ -112,8 +104,6 @@ export interface StorageAdapter {
    */
   getRolesForUser(userId: string): Promise<Role[]>;
 
-  // ─── User ↔ Permission (direct) ────────────────────────────────────────────
-
   /**
    * Grant a permission directly to a user (not via a role). Idempotent.
    * @throws {PermissionNotFoundError} if the permission does not exist.
@@ -130,8 +120,6 @@ export interface StorageAdapter {
    * @returns An empty array if the user has no direct permissions.
    */
   getDirectPermissionsForUser(userId: string): Promise<Permission[]>;
-
-  // ─── Optional optimization ─────────────────────────────────────────────────
 
   /**
    * Get all effective permissions for a user — both inherited from roles

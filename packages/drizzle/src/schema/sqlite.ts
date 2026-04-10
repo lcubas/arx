@@ -1,7 +1,7 @@
 import { integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 // SQLite stores timestamps as integers (Unix ms). Drizzle handles the
-// Date ↔ integer conversion automatically with { mode: 'timestamp_ms' }.
+// Date - integer conversion automatically with { mode: 'timestamp_ms' }.
 
 export const roles = sqliteTable('roles', {
   id: text('id').primaryKey(),

@@ -1,12 +1,4 @@
 /**
- * Core domain entities for arx.
- *
- * These are pure data shapes. They carry no methods, no ORM decorators,
- * and no framework coupling. Adapters return these types; the engine
- * consumes them. Developers interact with them via the public API.
- */
-
-/**
  * A named group of permissions that can be assigned to users.
  */
 export interface Role {

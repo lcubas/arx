@@ -19,12 +19,10 @@
  *
  * @packageDocumentation
  */
-
-// ─── Primary entry point ───────────────────────────────────────────────────
 export { createAuthorization } from './authorization';
 export type { Authorization, AuthorizationConfig } from './authorization';
 
-// ─── Domain entities ───────────────────────────────────────────────────────
+// Domain entities
 export type {
   Permission,
   PermissionAssignment,
@@ -33,7 +31,7 @@ export type {
   RolePermissionAssignment,
 } from './types';
 
-// ─── Errors ────────────────────────────────────────────────────────────────
+// Errors
 export {
   ArxError,
   PermissionAlreadyExistsError,
@@ -42,11 +40,11 @@ export {
   RoleNotFoundError,
 } from './errors';
 
-// ─── Adapter contract ──────────────────────────────────────────────────────
+// Adapter contract
 export type { StorageAdapter } from './adapter';
 
-// ─── Operation options ─────────────────────────────────────────────────────
+// Operation options
 export type { CreatePermissionOptions, CreateRoleOptions } from './engine';
 
-// ─── Testing adapter ───────────────────────────────────────────────────────
+// Testing adapter
 export { InMemoryAdapter } from './in-memory-adapter';

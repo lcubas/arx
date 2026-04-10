@@ -32,8 +32,6 @@ export class ArxError extends Error {
   }
 }
 
-// ─── Role errors ─────────────────────────────────────────────────────────────
-
 /**
  * Thrown when a role is looked up by name and does not exist.
  */
@@ -62,8 +60,6 @@ export class RoleAlreadyExistsError extends ArxError {
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
-
-// ─── Permission errors ────────────────────────────────────────────────────────
 
 /**
  * Thrown when a permission is looked up by name and does not exist.
