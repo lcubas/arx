@@ -69,7 +69,7 @@ Pass your Drizzle `db` instance and the arx schema tables:
 import { drizzle } from 'drizzle-orm/node-postgres'
 import { createAuthorization } from '@arx/core'
 import { DrizzleAdapter } from '@arx/drizzle'
-import { schema } from './schema.js'   // your merged schema
+import { schema } from './schema'   // your merged schema
 
 const db = drizzle(process.env.DATABASE_URL)
 
@@ -133,7 +133,7 @@ Use the contract test suite from `@arx/core/testing` to verify your integration 
 // e.g., src/tests/drizzle-adapter.test.ts
 import { testStorageAdapterContract } from '@arx/core/testing'
 import { DrizzleAdapter } from '@arx/drizzle'
-import { schema } from '../schema.js'
+import { schema } from '../schema'
 
 testStorageAdapterContract({
   create: () => new DrizzleAdapter(db, schema),

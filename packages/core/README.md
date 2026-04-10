@@ -128,7 +128,7 @@ export class MyAdapter implements StorageAdapter {
 ```ts
 // my-adapter/src/tests/my-adapter.test.ts
 import { testStorageAdapterContract } from '@arx/core/testing'
-import { MyAdapter } from '../adapter.js'
+import { MyAdapter } from '../adapter'
 
 testStorageAdapterContract({
   create: () => new MyAdapter(),
