@@ -1,9 +1,9 @@
 import { type DynamicModule, Module } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ArxService } from './arx.service.js';
-import { ArxGuard } from './arx.guard.js';
-import type { ArxModuleAsyncOptions, ArxModuleOptions } from './interfaces.js';
-import { ARX_MODULE_OPTIONS } from './tokens.js';
+import { ArxService } from './arx.service';
+import { ArxGuard } from './arx.guard';
+import type { ArxModuleAsyncOptions, ArxModuleOptions } from './interfaces';
+import { ARX_MODULE_OPTIONS } from './tokens';
 
 /**
  * NestJS module for @arx/core.

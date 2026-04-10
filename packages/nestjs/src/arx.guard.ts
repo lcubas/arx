@@ -5,9 +5,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import type { ArxModuleOptions } from './interfaces.js';
-import { ArxService } from './arx.service.js';
-import { ARX_PERMISSIONS_KEY, ARX_ROLES_KEY } from './tokens.js';
+import type { ArxModuleOptions } from './interfaces';
+import { ArxService } from './arx.service';
+import { ARX_PERMISSIONS_KEY, ARX_ROLES_KEY } from './tokens';
 
 /**
  * Guard that enforces @RequirePermissions() and @RequireRole() decorators.

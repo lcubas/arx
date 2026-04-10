@@ -7,8 +7,8 @@ import {
   type Permission,
   type Role,
 } from '@arx/core';
-import type { ArxModuleOptions } from './interfaces.js';
-import { ARX_MODULE_OPTIONS } from './tokens.js';
+import type { ArxModuleOptions } from './interfaces';
+import { ARX_MODULE_OPTIONS } from './tokens';
 
 /**
  * Injectable wrapper around the @arx/core Authorization instance.

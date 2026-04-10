@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import { ARX_PERMISSIONS_KEY, ARX_ROLES_KEY } from './tokens.js';
+import { ARX_PERMISSIONS_KEY, ARX_ROLES_KEY } from './tokens';
 
 /**
  * Requires the current user to hold ALL of the specified permissions.

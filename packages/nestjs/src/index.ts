@@ -1,5 +1,5 @@
-export { ArxModule } from './arx.module.js';
-export { ArxService } from './arx.service.js';
-export { ArxGuard } from './arx.guard.js';
-export { RequirePermissions, RequireRole } from './decorators.js';
-export type { ArxModuleOptions, ArxModuleAsyncOptions } from './interfaces.js';
+export { ArxModule } from './arx.module';
+export { ArxService } from './arx.service';
+export { ArxGuard } from './arx.guard';
+export { RequirePermissions, RequireRole } from './decorators';
+export type { ArxModuleOptions, ArxModuleAsyncOptions } from './interfaces';
