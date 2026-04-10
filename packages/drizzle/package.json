@@ -2,7 +2,14 @@
   "name": "@arx/drizzle",
   "version": "0.0.1",
   "description": "Drizzle ORM adapter for @arx/core — supports PostgreSQL, MySQL, and SQLite",
-  "keywords": ["authorization", "rbac", "drizzle", "drizzle-orm", "adapter", "typescript"],
+  "keywords": [
+    "authorization",
+    "rbac",
+    "drizzle",
+    "drizzle-orm",
+    "adapter",
+    "typescript"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,30 +26,53 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./schema/pg": {
-      "types": "./dist/schema/pg.d.ts",
-      "import": "./dist/schema/pg.js",
-      "require": "./dist/schema/pg.cjs"
+      "import": {
+        "types": "./dist/schema/pg.d.mts",
+        "default": "./dist/schema/pg.mjs"
+      },
+      "require": {
+        "types": "./dist/schema/pg.d.cts",
+        "default": "./dist/schema/pg.cjs"
+      }
     },
     "./schema/mysql": {
-      "types": "./dist/schema/mysql.d.ts",
-      "import": "./dist/schema/mysql.js",
-      "require": "./dist/schema/mysql.cjs"
+      "import": {
+        "types": "./dist/schema/mysql.d.mts",
+        "default": "./dist/schema/mysql.mjs"
+      },
+      "require": {
+        "types": "./dist/schema/mysql.d.cts",
+        "default": "./dist/schema/mysql.cjs"
+      }
     },
     "./schema/sqlite": {
-      "types": "./dist/schema/sqlite.d.ts",
-      "import": "./dist/schema/sqlite.js",
-      "require": "./dist/schema/sqlite.cjs"
+      "import": {
+        "types": "./dist/schema/sqlite.d.mts",
+        "default": "./dist/schema/sqlite.mjs"
+      },
+      "require": {
+        "types": "./dist/schema/sqlite.d.cts",
+        "default": "./dist/schema/sqlite.cjs"
+      }
     }
   },
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": ["dist", "README.md"],
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "sideEffects": false,
   "publishConfig": {
     "access": "public"
@@ -58,6 +88,7 @@
   },
   "devDependencies": {
     "@arx/core": "workspace:*",
+    "@types/node": "*",
     "drizzle-orm": "^0.38.0",
     "tsdown": "^0.21.0",
     "typescript": "^5.7.0",

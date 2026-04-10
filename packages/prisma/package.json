@@ -2,7 +2,13 @@
   "name": "@arx/prisma",
   "version": "0.0.1",
   "description": "Prisma adapter for @arx/core — supports all databases Prisma supports",
-  "keywords": ["authorization", "rbac", "prisma", "adapter", "typescript"],
+  "keywords": [
+    "authorization",
+    "rbac",
+    "prisma",
+    "adapter",
+    "typescript"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,15 +25,24 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": ["dist", "schema.prisma", "README.md"],
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "files": [
+    "dist",
+    "schema.prisma",
+    "README.md"
+  ],
   "sideEffects": false,
   "publishConfig": {
     "access": "public"

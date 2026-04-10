@@ -8,7 +8,7 @@ Modern, type-safe authorization library for Node.js and TypeScript. Provides Rol
 - **Storage-agnostic** — bring your own database via a `StorageAdapter`; official adapters for [Prisma](./../prisma) and [Drizzle ORM](./../drizzle) are available
 - **Fully typed** — strict TypeScript 5.x, zero `any` in the public API
 - **Minimal surface** — one factory function, everything else is tree-shakeable
-- **Batteries included for testing** — `InMemoryAdapter` and a reusable contract test suite
+- **Batteries included for testing** — `InMemoryAdapter`
 
 ## Installation
 
@@ -95,10 +95,10 @@ All errors extend `ArxError` which extends `Error`.
 
 | Class | When thrown | Extra property |
 |---|---|---|
-| `RoleAlreadyExistsError` | `createRole` with duplicate name | `.roleName` |
-| `RoleNotFoundError` | `assignRole`, `grantPermissionToRole` | `.roleName` |
-| `PermissionAlreadyExistsError` | `createPermission` with duplicate name | `.permissionName` |
-| `PermissionNotFoundError` | `assignPermission`, `grantPermissionToRole` | `.permissionName` |
+| `RoleAlreadyExistsError` | `createRole` with duplicate name | `roleName` |
+| `RoleNotFoundError` | `assignRole`, `grantPermissionToRole` | `roleName` |
+| `PermissionAlreadyExistsError` | `createPermission` with duplicate name | `permissionName` |
+| `PermissionNotFoundError` | `assignPermission`, `grantPermissionToRole` | `permissionName` |
 
 ```ts
 import { RoleNotFoundError } from '@arx/core'
@@ -117,7 +117,6 @@ try {
 Implement the `StorageAdapter` interface and verify it with the built-in contract test suite:
 
 ```ts
-// my-adapter/src/adapter.ts
 import type { StorageAdapter } from '@arx/core'
 
 export class MyAdapter implements StorageAdapter {
@@ -126,13 +125,11 @@ export class MyAdapter implements StorageAdapter {
 ```
 
 ```ts
-// my-adapter/src/tests/my-adapter.test.ts
-import { testStorageAdapterContract } from '@arx/core/testing'
+import { createAuthorization } from '@arx/core'
 import { MyAdapter } from '../adapter'
 
-testStorageAdapterContract({
-  create: () => new MyAdapter(),
-  reset:  async () => { /* truncate tables */ },
+const arx = createAuthorization({
+  adapter: new MyAdapter(),
 })
 ```
 

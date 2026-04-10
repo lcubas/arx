@@ -22,15 +22,15 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.11",
-    "@changesets/cli": "^2.27.0",
-    "@commitlint/config-conventional": "^19.0.0",
-    "commitlint": "^19.0.0",
-    "lint-staged": "^15.2.0",
-    "simple-git-hooks": "^2.11.0",
-    "tsdown": "^0.21.0",
-    "turbo": "^2.9.0",
-    "typescript": "^5.7.0",
-    "vitest": "^4.0.0"
+    "@changesets/cli": "^2.30.0",
+    "@commitlint/config-conventional": "^19.8.1",
+    "commitlint": "^19.8.1",
+    "lint-staged": "^15.5.2",
+    "simple-git-hooks": "^2.13.1",
+    "tsdown": "^0.21.7",
+    "turbo": "^2.9.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.4"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged",

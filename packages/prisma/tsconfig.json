@@ -2,11 +2,9 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist",
-    "paths": {
-      "@arx/core": ["../core/src/index.ts"]
-    }
+    "outDir": "dist"
   },
+  "references": [{ "path": "../core" }],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

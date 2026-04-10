@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { Permission, Role, StorageAdapter } from '@arx/core';
 import {
   PermissionAlreadyExistsError,
@@ -5,10 +6,10 @@ import {
   RoleAlreadyExistsError,
   RoleNotFoundError,
 } from '@arx/core';
-import { and, eq } from 'drizzle-orm';
 import type { Column } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
-// ─── Schema type ──────────────────────────────────────────────────────────────
+// Schema type
 //
 // ArxDrizzleSchema describes the shape that the schema objects exported from
 // @arx/drizzle/schema/pg, /schema/mysql, and /schema/sqlite all conform to.
@@ -43,7 +44,7 @@ export type ArxDrizzleSchema = {
   };
 };
 
-// ─── Database type ────────────────────────────────────────────────────────────
+// Database type
 //
 // AnyDrizzleDB is a structural interface satisfied by the db instances returned
 // by drizzle() for all supported dialects (postgres-js, mysql2, better-sqlite3,
@@ -52,8 +53,6 @@ export type ArxDrizzleSchema = {
 
 // biome-ignore lint/suspicious/noExplicitAny: intentional — dialect-agnostic db wrapper
 type AnyDrizzleDB = Record<string, any>;
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 type RoleRow = { id: string; name: string; createdAt: Date };
 type PermissionRow = { id: string; name: string; createdAt: Date };
@@ -65,8 +64,6 @@ function toRole(row: RoleRow): Role {
 function toPermission(row: PermissionRow): Permission {
   return { id: row.id, name: row.name, createdAt: row.createdAt };
 }
-
-// ─── Adapter ──────────────────────────────────────────────────────────────────
 
 /**
  * Drizzle ORM implementation of the arx `StorageAdapter`.
@@ -97,13 +94,11 @@ export class DrizzleAdapter implements StorageAdapter {
     private readonly tables: ArxDrizzleSchema,
   ) {}
 
-  // ─── Roles ─────────────────────────────────────────────────────────────────
-
   async createRole(name: string): Promise<Role> {
     const existing = await this.findRole(name);
     if (existing) throw new RoleAlreadyExistsError(name);
 
-    const id = crypto.randomUUID();
+    const id = randomUUID();
     const createdAt = new Date();
 
     await this.db.insert(this.tables.roles).values({ id, name, createdAt });
@@ -128,8 +123,6 @@ export class DrizzleAdapter implements StorageAdapter {
   async deleteRole(name: string): Promise<void> {
     await this.db.delete(this.tables.roles).where(eq(this.tables.roles.name, name));
   }
-
-  // ─── Permissions ───────────────────────────────────────────────────────────
 
   async createPermission(name: string): Promise<Permission> {
     const existing = await this.findPermission(name);
@@ -160,8 +153,6 @@ export class DrizzleAdapter implements StorageAdapter {
   async deletePermission(name: string): Promise<void> {
     await this.db.delete(this.tables.permissions).where(eq(this.tables.permissions.name, name));
   }
-
-  // ─── Role ↔ Permission ─────────────────────────────────────────────────────
 
   async grantPermissionToRole(roleName: string, permissionName: string): Promise<void> {
     const [role, permission] = await Promise.all([
@@ -228,8 +219,6 @@ export class DrizzleAdapter implements StorageAdapter {
     return rows.map(toPermission);
   }
 
-  // ─── User ↔ Role ───────────────────────────────────────────────────────────
-
   async assignRoleToUser(userId: string, roleName: string): Promise<void> {
     const role = await this.findRole(roleName);
     if (!role) throw new RoleNotFoundError(roleName);
@@ -273,8 +262,6 @@ export class DrizzleAdapter implements StorageAdapter {
 
     return rows.map(toRole);
   }
-
-  // ─── User ↔ Permission (direct) ────────────────────────────────────────────
 
   async grantPermissionToUser(userId: string, permissionName: string): Promise<void> {
     const permission = await this.findPermission(permissionName);
@@ -328,8 +315,6 @@ export class DrizzleAdapter implements StorageAdapter {
 
     return rows.map(toPermission);
   }
-
-  // ─── Optional optimization ─────────────────────────────────────────────────
 
   /**
    * Resolve all effective permissions for a user in two parallel queries:
