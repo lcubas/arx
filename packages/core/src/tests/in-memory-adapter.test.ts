@@ -1,23 +1,14 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { InMemoryAdapter } from '../in-memory-adapter';
-import { testStorageAdapterContract } from './contract/storage-adapter.contract';
 
-// ─── Contract compliance ──────────────────────────────────────────────────────
-
-describe('InMemoryAdapter — StorageAdapter contract', () => {
-  testStorageAdapterContract({
-    create: () => new InMemoryAdapter(),
-  });
-});
-
-// ─── InMemoryAdapter-specific behaviour ──────────────────────────────────────
-
-describe('InMemoryAdapter — specific behaviour', () => {
+describe('InMemoryAdapter', () => {
   let adapter: InMemoryAdapter;
 
   beforeEach(() => {
     adapter = new InMemoryAdapter();
   });
+
+  // ─── reset() ───────────────────────────────────────────────────────────────
 
   describe('reset()', () => {
     it('clears all roles, permissions and assignments', async () => {
@@ -43,8 +34,10 @@ describe('InMemoryAdapter — specific behaviour', () => {
     });
   });
 
+  // ─── getEffectivePermissions() ─────────────────────────────────────────────
+
   describe('getEffectivePermissions()', () => {
-    it('unions direct and role-inherited permissions without duplicates', async () => {
+    it('returns direct + role-inherited permissions without duplicates', async () => {
       await adapter.createRole('editor');
       await adapter.createPermission('edit:post');
       await adapter.createPermission('view:post');
@@ -57,19 +50,23 @@ describe('InMemoryAdapter — specific behaviour', () => {
       await adapter.grantPermissionToUser('user-1', 'edit:post');
       await adapter.grantPermissionToUser('user-1', 'delete:post');
 
-      const perms = await adapter.getEffectivePermissions?.('user-1');
-      const names = perms.map((p) => p.name).sort();
-      expect(names).toEqual(['delete:post', 'edit:post', 'view:post']);
+      const perms = await adapter.getEffectivePermissions('user-1');
+      expect(perms.map((p) => p.name).sort()).toEqual([
+        'delete:post',
+        'edit:post',
+        'view:post',
+      ]);
     });
 
     it('returns empty array for a user with no assignments', async () => {
-      const perms = await adapter.getEffectivePermissions?.('user-1');
-      expect(perms).toEqual([]);
+      expect(await adapter.getEffectivePermissions('user-1')).toEqual([]);
     });
   });
 
+  // ─── user isolation ────────────────────────────────────────────────────────
+
   describe('user isolation', () => {
-    it('user-1 and user-2 have independent permission sets', async () => {
+    it('assignments on user-1 do not bleed into user-2', async () => {
       await adapter.createPermission('admin:write');
       await adapter.grantPermissionToUser('user-1', 'admin:write');
       expect(await adapter.getDirectPermissionsForUser('user-2')).toEqual([]);

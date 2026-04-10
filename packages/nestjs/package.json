@@ -1,0 +1,54 @@
+{
+  "name": "@arx/nestjs",
+  "version": "0.0.1",
+  "description": "NestJS module for @arx/core — guards, decorators and injectable service",
+  "keywords": ["authorization", "rbac", "nestjs", "guard", "decorator", "typescript"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/arx.git",
+    "directory": "packages/nestjs"
+  },
+  "homepage": "https://github.com/your-org/arx/tree/main/packages/nestjs#readme",
+  "bugs": {
+    "url": "https://github.com/your-org/arx/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --treeshake --no-splitting --clean --external @nestjs/common --external @nestjs/core --external reflect-metadata --external @arx/core",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@arx/core": "*",
+    "@nestjs/common": ">=10.0.0",
+    "@nestjs/core": ">=10.0.0",
+    "reflect-metadata": ">=0.1.12"
+  },
+  "devDependencies": {
+    "@arx/core": "workspace:*",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.8.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.0"
+  }
+}
