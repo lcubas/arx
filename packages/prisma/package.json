@@ -33,7 +33,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --treeshake --no-splitting --clean --external @prisma/client --external @arx/core",
+    "build": "tsdown src/index.ts --format esm,cjs --dts --sourcemap --no-splitting --clean --external @prisma/client --external @arx/core",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
@@ -44,8 +44,8 @@
   "devDependencies": {
     "@prisma/client": "^5.0.0",
     "@arx/core": "workspace:*",
-    "tsup": "^8.0.0",
+    "tsdown": "^0.21.0",
     "typescript": "^5.7.0",
-    "vitest": "^2.0.0"
+    "vitest": "^4.0.0"
   }
 }

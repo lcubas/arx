@@ -33,7 +33,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --treeshake --no-splitting --clean --external @nestjs/common --external @nestjs/core --external reflect-metadata --external @arx/core",
+    "build": "tsdown src/index.ts --format esm,cjs --dts --sourcemap --no-splitting --clean --external @nestjs/common --external @nestjs/core --external reflect-metadata --external @arx/core",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
@@ -48,7 +48,7 @@
     "@nestjs/core": "^11.0.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0",
-    "tsup": "^8.0.0",
+    "tsdown": "^0.21.0",
     "typescript": "^5.7.0"
   }
 }
