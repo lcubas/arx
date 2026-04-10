@@ -1,7 +1,11 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "organizeImports": {
-    "enabled": true
+  "$schema": "https://biomejs.dev/schemas/2.4.11/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "linter": {
     "enabled": true,
@@ -42,18 +46,19 @@
     }
   },
   "files": {
-    "ignore": [
-      "**/dist/**",
-      "**/node_modules/**",
-      "**/.turbo/**",
-      "**/.changeset/**",
-      "**/coverage/**",
-      "**/tsup.config.bundled_*"
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/node_modules",
+      "!**/.turbo",
+      "!**/.changeset",
+      "!**/coverage",
+      "!**/tsup.config.bundled_*"
     ]
   },
   "overrides": [
     {
-      "include": ["**/tsconfig*.json"],
+      "includes": ["**/tsconfig*.json"],
       "json": {
         "parser": {
           "allowComments": true,
