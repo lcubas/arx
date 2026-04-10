@@ -23,28 +23,23 @@ export type ArxDrizzleSchema = {
     id: Column;
     name: Column;
     createdAt: Column;
-    [k: string]: Column;
   };
   permissions: {
     id: Column;
     name: Column;
     createdAt: Column;
-    [k: string]: Column;
   };
   rolePermissions: {
     roleId: Column;
     permissionId: Column;
-    [k: string]: Column;
   };
   userRoles: {
     userId: Column;
     roleId: Column;
-    [k: string]: Column;
   };
   userPermissions: {
     userId: Column;
     permissionId: Column;
-    [k: string]: Column;
   };
 };
 
