@@ -10,7 +10,8 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import type { PostsService } from './posts.service';
+// biome-ignore lint/style/useImportType: must stay a value import — Nest's DI reflection needs the real class reference at runtime.
+import { PostsService } from './posts.service';
 
 // Simulated post data — in a real app this would come from a database.
 const posts = [

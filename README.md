@@ -26,6 +26,23 @@ await can('user-1', 'post:edit') // true
 | [`@arxjs/typeorm`](packages/typeorm) | Adapter for [TypeORM](https://typeorm.io/) — PostgreSQL, MySQL, SQLite, SQL Server |
 | [`@arxjs/nestjs`](packages/nestjs) | NestJS module, injectable `ArxService`, route guard, and decorators |
 
+## Examples
+
+| Example | Stack |
+|---|---|
+| [`express-drizzle-sqlite`](examples/express-drizzle-sqlite) | Express + Drizzle ORM + in-memory SQLite |
+| [`nestjs-typeorm-sqlite`](examples/nestjs-typeorm-sqlite) | NestJS + TypeORM + in-memory SQLite, using `@arxjs/nestjs`'s guard and decorators |
+
+Both are runnable end-to-end. From the repo root:
+
+```bash
+pnpm install
+pnpm build
+pnpm --filter example-express-drizzle-sqlite start   # or: --filter nestjs-typeorm-sqlite
+```
+
+See each example's own README for what it demonstrates and sample requests to try.
+
 ## How it works
 
 arx separates the authorization logic from the database. You pick an adapter that matches your ORM, register it once, and use the same API regardless of your database.

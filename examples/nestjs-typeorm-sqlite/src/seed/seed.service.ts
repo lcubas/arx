@@ -1,4 +1,5 @@
-import type { ArxService } from '@arxjs/nestjs';
+// biome-ignore lint/style/useImportType: must stay a value import — Nest's DI reflection needs the real class reference at runtime.
+import { ArxService } from '@arxjs/nestjs';
 import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
