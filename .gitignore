@@ -30,6 +30,9 @@ package-lock.json
 
 # tsup temp bundled config artifacts
 **/tsup.config.bundled_*
+
+# TypeScript incremental build cache
+*.tsbuildinfo
 **/_tmp_*
 
 # Logs
@@ -44,3 +47,8 @@ pnpm-debug.log*
 
 # pnpm local store (created in sandboxed environments)
 .pnpm-store/
+
+# Generated Prisma test client and SQLite test database
+packages/prisma/src/tests/generated/
+packages/prisma/src/tests/*.db
+packages/prisma/src/tests/*.db-journal

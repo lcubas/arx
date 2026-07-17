@@ -53,7 +53,8 @@
       "!**/.turbo",
       "!**/.changeset",
       "!**/coverage",
-      "!**/tsup.config.bundled_*"
+      "!**/tsup.config.bundled_*",
+      "!packages/prisma/src/tests/generated"
     ]
   },
   "overrides": [
