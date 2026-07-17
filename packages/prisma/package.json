@@ -49,6 +49,7 @@
   },
   "scripts": {
     "build": "tsdown src/index.ts --format esm,cjs --dts --sourcemap --no-splitting --clean --external @prisma/client --external @arxjs/core",
+    "pretest": "prisma generate --schema=src/tests/schema.prisma && prisma db push --schema=src/tests/schema.prisma --skip-generate --force-reset",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
@@ -59,8 +60,10 @@
   "devDependencies": {
     "@prisma/client": "^6.0.0",
     "@arxjs/core": "workspace:*",
+    "prisma": "^6.0.0",
     "tsdown": "^0.21.0",
     "typescript": "^5.7.0",
+    "vite": "^6.4.3",
     "vitest": "^4.0.0"
   }
 }

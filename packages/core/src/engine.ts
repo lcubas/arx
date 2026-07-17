@@ -109,7 +109,11 @@ export class AuthorizationEngine {
    * and return the existing role instead.
    *
    * Pass `options.permissions` to grant permissions to the role immediately
-   * after creation, in a single operation.
+   * after creation, in a single operation. This is not atomic at the storage
+   * level — the `StorageAdapter` contract exposes no transactions — but if
+   * granting fails partway through, the engine deletes the just-created role
+   * as a best-effort compensation so callers never observe a role stuck with
+   * a partial set of permissions.
    */
   async createRole(name: string, options?: CreateRoleOptions): Promise<Role> {
     const existing = await this.adapter.findRole(name);
@@ -122,9 +126,14 @@ export class AuthorizationEngine {
     const role = await this.adapter.createRole(name);
 
     if (options?.permissions && options.permissions.length > 0) {
-      await Promise.all(
-        options.permissions.map((perm) => this.adapter.grantPermissionToRole(name, perm)),
-      );
+      try {
+        await Promise.all(
+          options.permissions.map((perm) => this.adapter.grantPermissionToRole(name, perm)),
+        );
+      } catch (err) {
+        await this.adapter.deleteRole(name).catch(() => {});
+        throw err;
+      }
     }
 
     return role;

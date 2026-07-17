@@ -5,7 +5,6 @@ import {
   RoleAlreadyExistsError,
   RoleNotFoundError,
 } from '@arxjs/core';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 type RoleRecord = {
   id: string;
@@ -42,13 +41,15 @@ export interface PrismaClientForArx {
     create(args: { data: { name: string } }): Promise<RoleRecord>;
     findUnique(args: { where: { name: string } }): Promise<RoleRecord | null>;
     delete(args: { where: { name: string } }): Promise<RoleRecord>;
-    // More-specific overload first: with include → returns full shape
+    // `include` is optional here (rather than two overloads) because real
+    // generated Prisma clients expose `findMany` as a single generic method —
+    // TypeScript cannot reliably prove a generic method satisfies two fixed
+    // overloads at once, even though each individual call shape is valid.
+    // Call sites narrow the union return type themselves where needed.
     findMany(args: {
       where: { users: { some: { userId: string } } };
-      include: { permissions: { include: { permission: true } } };
-    }): Promise<RoleWithPermissions[]>;
-    // Fallback: without include → plain records
-    findMany(args: { where: { users: { some: { userId: string } } } }): Promise<RoleRecord[]>;
+      include?: { permissions: { include: { permission: true } } };
+    }): Promise<Array<RoleRecord | RoleWithPermissions>>;
   };
   permission: {
     create(args: { data: { name: string } }): Promise<PermissionRecord>;
@@ -93,6 +94,21 @@ export interface PrismaClientForArx {
 const PRISMA_UNIQUE_CONSTRAINT = 'P2002';
 const PRISMA_NOT_FOUND = 'P2025';
 
+/**
+ * Checks a caught error's Prisma error code without relying on
+ * `instanceof PrismaClientKnownRequestError`.
+ *
+ * Consumers who generate their Prisma Client to a custom `output` location
+ * (increasingly the recommended setup) get a self-contained runtime bundle
+ * with its own copy of that class — `instanceof` against the class imported
+ * here from `@prisma/client/runtime/library` then fails even though the
+ * error is the exact same kind. `code` is a stable string across bundles,
+ * so check that directly instead.
+ */
+function hasPrismaErrorCode(err: unknown, code: string): boolean {
+  return typeof err === 'object' && err !== null && (err as { code?: unknown }).code === code;
+}
+
 // Helpers
 function toRole(record: RoleRecord): Role {
   return { id: record.id, name: record.name, createdAt: record.createdAt };
@@ -128,7 +144,7 @@ export class PrismaAdapter implements StorageAdapter {
       const record = await this.prisma.role.create({ data: { name } });
       return toRole(record);
     } catch (err) {
-      if (err instanceof PrismaClientKnownRequestError && err.code === PRISMA_UNIQUE_CONSTRAINT) {
+      if (hasPrismaErrorCode(err, PRISMA_UNIQUE_CONSTRAINT)) {
         throw new RoleAlreadyExistsError(name);
       }
       throw err;
@@ -144,7 +160,7 @@ export class PrismaAdapter implements StorageAdapter {
     try {
       await this.prisma.role.delete({ where: { name } });
     } catch (err) {
-      if (err instanceof PrismaClientKnownRequestError && err.code === PRISMA_NOT_FOUND) {
+      if (hasPrismaErrorCode(err, PRISMA_NOT_FOUND)) {
         return;
       }
       throw err;
@@ -156,7 +172,7 @@ export class PrismaAdapter implements StorageAdapter {
       const record = await this.prisma.permission.create({ data: { name } });
       return toPermission(record);
     } catch (err) {
-      if (err instanceof PrismaClientKnownRequestError && err.code === PRISMA_UNIQUE_CONSTRAINT) {
+      if (hasPrismaErrorCode(err, PRISMA_UNIQUE_CONSTRAINT)) {
         throw new PermissionAlreadyExistsError(name);
       }
       throw err;
@@ -172,7 +188,7 @@ export class PrismaAdapter implements StorageAdapter {
     try {
       await this.prisma.permission.delete({ where: { name } });
     } catch (err) {
-      if (err instanceof PrismaClientKnownRequestError && err.code === PRISMA_NOT_FOUND) {
+      if (hasPrismaErrorCode(err, PRISMA_NOT_FOUND)) {
         return;
       }
       throw err;
@@ -300,7 +316,10 @@ export class PrismaAdapter implements StorageAdapter {
     };
 
     for (const row of directRows) collect(row.permission);
-    for (const role of roles) {
+    // `include` was passed above, so every row here is a RoleWithPermissions —
+    // narrower than the union findMany() declares to stay assignable from a
+    // real Prisma client (see the comment on PrismaClientForArx.role.findMany).
+    for (const role of roles as RoleWithPermissions[]) {
       for (const rp of role.permissions) collect(rp.permission);
     }
 

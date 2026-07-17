@@ -178,6 +178,19 @@ describe('createRole()', () => {
       PermissionNotFoundError,
     );
   });
+
+  it('does not leave a partially-configured role behind when granting permissions fails', async () => {
+    const { arx } = setup();
+    await arx.createPermission('edit:post');
+
+    await expect(arx.createRole('editor', { permissions: ['edit:post', 'ghost'] })).rejects.toThrow(
+      PermissionNotFoundError,
+    );
+
+    // The role must not have survived the failed setup — assigning it now
+    // should fail as if it never existed.
+    await expect(arx.assignRole('user-1', 'editor')).rejects.toThrow(RoleNotFoundError);
+  });
 });
 
 // ─── deleteRole ───────────────────────────────────────────────────────────────

@@ -58,10 +58,12 @@
   "devDependencies": {
     "@arxjs/core": "workspace:*",
     "@types/node": "*",
+    "better-sqlite3": "^11.8.1",
     "reflect-metadata": "^0.2.0",
     "tsdown": "^0.21.0",
     "typeorm": "^0.3.0",
     "typescript": "^5.7.0",
+    "vite": "^6.4.3",
     "vitest": "^4.0.0"
   }
 }

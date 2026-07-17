@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { StorageAdapter } from './adapter';
 import {
   PermissionAlreadyExistsError,
@@ -39,7 +40,7 @@ export class InMemoryAdapter implements StorageAdapter {
       throw new RoleAlreadyExistsError(name);
     }
     const role: Role = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       name,
       createdAt: new Date(),
     };
@@ -66,7 +67,7 @@ export class InMemoryAdapter implements StorageAdapter {
       throw new PermissionAlreadyExistsError(name);
     }
     const permission: Permission = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       name,
       createdAt: new Date(),
     };

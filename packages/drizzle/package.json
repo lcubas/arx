@@ -88,10 +88,13 @@
   },
   "devDependencies": {
     "@arxjs/core": "workspace:*",
+    "@types/better-sqlite3": "^7.6.12",
     "@types/node": "*",
+    "better-sqlite3": "^11.8.1",
     "drizzle-orm": "^0.38.0",
     "tsdown": "^0.21.0",
     "typescript": "^5.7.0",
+    "vite": "^6.4.3",
     "vitest": "^4.0.0"
   }
 }
