@@ -33,6 +33,21 @@ export class ArxError extends Error {
 }
 
 /**
+ * Thrown when a role or permission name is empty or contains only
+ * whitespace. Passed to `createRole` / `createPermission`.
+ */
+export class InvalidNameError extends ArxError {
+  override readonly name = 'InvalidNameError';
+  readonly value: string;
+
+  constructor(value: string) {
+    super(`Name must not be empty or contain only whitespace, got ${JSON.stringify(value)}.`);
+    this.value = value;
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
+/**
  * Thrown when a role is looked up by name and does not exist.
  */
 export class RoleNotFoundError extends ArxError {

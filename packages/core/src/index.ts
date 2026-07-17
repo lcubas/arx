@@ -29,6 +29,7 @@ export type { CreatePermissionOptions, CreateRoleOptions } from './engine';
 // Errors
 export {
   ArxError,
+  InvalidNameError,
   PermissionAlreadyExistsError,
   PermissionNotFoundError,
   RoleAlreadyExistsError,

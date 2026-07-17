@@ -104,8 +104,9 @@ All errors extend `ArxError` which extends `Error`.
 | `RoleNotFoundError` | `assignRole`, `grantPermissionToRole` with a non-existent role |
 | `PermissionAlreadyExistsError` | `createPermission` with a name that already exists |
 | `PermissionNotFoundError` | `assignPermission`, `grantPermissionToRole` with a non-existent permission |
+| `InvalidNameError` | `createRole`, `createPermission` with an empty or whitespace-only name |
 
-Each error exposes the offending name as a typed property (`roleName` or `permissionName`):
+Each error exposes the offending name as a typed property (`roleName`, `permissionName`, or `value` for `InvalidNameError`):
 
 ```ts
 import { RoleNotFoundError } from '@arxjs/core'

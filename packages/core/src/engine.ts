@@ -1,11 +1,19 @@
 import type { StorageAdapter } from './adapter';
 import {
+  InvalidNameError,
   PermissionAlreadyExistsError,
   PermissionNotFoundError,
   RoleAlreadyExistsError,
   RoleNotFoundError,
 } from './errors';
 import type { Permission, Role } from './types';
+
+/**
+ * @throws {InvalidNameError} if the name is empty or contains only whitespace.
+ */
+function assertValidName(name: string): void {
+  if (name.trim().length === 0) throw new InvalidNameError(name);
+}
 
 export interface CreateRoleOptions {
   /**
@@ -116,6 +124,7 @@ export class AuthorizationEngine {
    * a partial set of permissions.
    */
   async createRole(name: string, options?: CreateRoleOptions): Promise<Role> {
+    assertValidName(name);
     const existing = await this.adapter.findRole(name);
 
     if (existing) {
@@ -179,6 +188,7 @@ export class AuthorizationEngine {
    * and return the existing permission instead.
    */
   async createPermission(name: string, options?: CreatePermissionOptions): Promise<Permission> {
+    assertValidName(name);
     const existing = await this.adapter.findPermission(name);
 
     if (existing) {

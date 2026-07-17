@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createAuthorization } from '../authorization';
 import {
   ArxError,
+  InvalidNameError,
   PermissionAlreadyExistsError,
   PermissionNotFoundError,
   RoleAlreadyExistsError,
@@ -191,6 +192,16 @@ describe('createRole()', () => {
     // should fail as if it never existed.
     await expect(arx.assignRole('user-1', 'editor')).rejects.toThrow(RoleNotFoundError);
   });
+
+  it('throws InvalidNameError for an empty name', async () => {
+    const { arx } = setup();
+    await expect(arx.createRole('')).rejects.toThrow(InvalidNameError);
+  });
+
+  it('throws InvalidNameError for a whitespace-only name', async () => {
+    const { arx } = setup();
+    await expect(arx.createRole('   ')).rejects.toThrow(InvalidNameError);
+  });
 });
 
 // ─── deleteRole ───────────────────────────────────────────────────────────────
@@ -277,6 +288,16 @@ describe('createPermission()', () => {
     const first = await arx.createPermission('edit:post');
     const second = await arx.createPermission('edit:post', { ifExists: 'ignore' });
     expect(second.id).toBe(first.id);
+  });
+
+  it('throws InvalidNameError for an empty name', async () => {
+    const { arx } = setup();
+    await expect(arx.createPermission('')).rejects.toThrow(InvalidNameError);
+  });
+
+  it('throws InvalidNameError for a whitespace-only name', async () => {
+    const { arx } = setup();
+    await expect(arx.createPermission('  \t ')).rejects.toThrow(InvalidNameError);
   });
 });
 
@@ -495,6 +516,14 @@ describe('error hierarchy', () => {
     const error = await arx.assignPermission('user-1', 'ghost').catch((e) => e);
     expect(error).toBeInstanceOf(PermissionNotFoundError);
     expect(error.permissionName).toBe('ghost');
+  });
+
+  it('InvalidNameError carries the offending value and is instanceof ArxError', async () => {
+    const { arx } = setup();
+    const error = await arx.createRole('  ').catch((e) => e);
+    expect(error).toBeInstanceOf(InvalidNameError);
+    expect(error).toBeInstanceOf(ArxError);
+    expect(error.value).toBe('  ');
   });
 
   it('PermissionAlreadyExistsError is instanceof ArxError', async () => {
