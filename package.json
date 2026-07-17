@@ -5,7 +5,7 @@
   "packageManager": "pnpm@11.13.1",
   "description": "Monorepo for arx — modern authorization library for TypeScript",
   "engines": {
-    "node": ">=18",
+    "node": ">=22.13",
     "pnpm": ">=9"
   },
   "scripts": {

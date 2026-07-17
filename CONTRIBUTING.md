@@ -8,7 +8,7 @@ Thanks for considering a contribution. This is a pnpm + Turborepo monorepo.
 pnpm install
 ```
 
-Requires Node >= 18 and pnpm >= 9 (see `packageManager` in the root `package.json`).
+Requires Node >= 22.13 and pnpm >= 9 (see `packageManager` in the root `package.json`).
 
 ## Common commands
 
