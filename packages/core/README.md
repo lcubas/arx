@@ -45,6 +45,24 @@ await arx.can('user-1', 'post:delete')  // true  (direct)
 await arx.can('user-2', 'post:edit')    // false
 ```
 
+## Typed permissions and roles
+
+`createAuthorization` takes two optional type parameters. Pass them to get autocomplete and a compile error on typos instead of a silent `false` at runtime — everything else about the API stays the same.
+
+```ts
+type Permission = 'post:edit' | 'post:delete' | 'user:manage'
+type Role = 'admin' | 'editor'
+
+const arx = createAuthorization<Permission, Role>({
+  adapter: new PrismaAdapter(prisma),
+})
+
+await arx.can('user-1', 'post:edit')  // ✅ autocompleted
+await arx.can('user-1', 'psot:edit')  // ❌ compile error, not a silent `false`
+```
+
+Both parameters default to `string`, so this is entirely opt-in and non-breaking.
+
 ## API
 
 ### `createAuthorization(config)`

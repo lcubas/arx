@@ -26,10 +26,15 @@ export interface AuthorizationConfig {
  * Destructure the functions you need — they are all independently
  * tree-shakeable when bundled.
  *
+ * Both type parameters are optional. Pass them to get autocomplete and
+ * compile-time typo checking for the permission/role vocabulary you define —
+ * see `createAuthorization`'s docs for an example. Without them, names are
+ * plain `string`, exactly like before.
+ *
  * @example
  * const { can, assignRole, createRole } = createAuthorization({ adapter })
  */
-export interface Authorization {
+export interface Authorization<TPermission extends string = string, TRole extends string = string> {
   // ─── Checks ──────────────────────────────────────────────────────────────
 
   /**
@@ -40,7 +45,7 @@ export interface Authorization {
    * @example
    * const allowed = await can('user-1', 'edit:post')
    */
-  can(userId: string, permissionName: string): Promise<boolean>;
+  can(userId: string, permissionName: TPermission): Promise<boolean>;
 
   /**
    * Check whether a user holds **all** of the specified permissions.
@@ -49,7 +54,7 @@ export interface Authorization {
    * @example
    * const allowed = await canAll('user-1', ['edit:post', 'delete:post'])
    */
-  canAll(userId: string, permissionNames: readonly string[]): Promise<boolean>;
+  canAll(userId: string, permissionNames: readonly TPermission[]): Promise<boolean>;
 
   /**
    * Check whether a user holds **at least one** of the specified permissions.
@@ -58,7 +63,7 @@ export interface Authorization {
    * @example
    * const allowed = await canAny('user-1', ['publish:post', 'edit:post'])
    */
-  canAny(userId: string, permissionNames: readonly string[]): Promise<boolean>;
+  canAny(userId: string, permissionNames: readonly TPermission[]): Promise<boolean>;
 
   /**
    * Check whether a user has been assigned a specific role.
@@ -66,7 +71,7 @@ export interface Authorization {
    * @example
    * const isAdmin = await hasRole('user-1', 'admin')
    */
-  hasRole(userId: string, roleName: string): Promise<boolean>;
+  hasRole(userId: string, roleName: TRole): Promise<boolean>;
 
   // ─── Role management ───────────────────────────────────────────────────────
 
@@ -81,13 +86,13 @@ export interface Authorization {
    * // Idempotent — safe to call in seeds or setup scripts
    * await createRole('admin', { ifExists: 'ignore' })
    */
-  createRole(name: string, options?: CreateRoleOptions): Promise<Role>;
+  createRole(name: TRole, options?: CreateRoleOptions<TPermission>): Promise<Role>;
 
   /**
    * Delete a role and remove all its assignments.
    * No-op if the role does not exist.
    */
-  deleteRole(name: string): Promise<void>;
+  deleteRole(name: TRole): Promise<void>;
 
   /**
    * Get all roles currently assigned to a user.
@@ -101,13 +106,13 @@ export interface Authorization {
    * @example
    * await assignRole('user-1', 'editor')
    */
-  assignRole(userId: string, roleName: string): Promise<void>;
+  assignRole(userId: string, roleName: TRole): Promise<void>;
 
   /**
    * Revoke a role from a user.
    * Idempotent — no-op if the user does not hold the role.
    */
-  revokeRole(userId: string, roleName: string): Promise<void>;
+  revokeRole(userId: string, roleName: TRole): Promise<void>;
 
   // ─── Permission management ─────────────────────────────────────────────────
 
@@ -118,13 +123,13 @@ export interface Authorization {
    * await createPermission('edit:post')
    * await createPermission('edit:post', { ifExists: 'ignore' })
    */
-  createPermission(name: string, options?: CreatePermissionOptions): Promise<Permission>;
+  createPermission(name: TPermission, options?: CreatePermissionOptions): Promise<Permission>;
 
   /**
    * Delete a permission and remove all its assignments.
    * No-op if the permission does not exist.
    */
-  deletePermission(name: string): Promise<void>;
+  deletePermission(name: TPermission): Promise<void>;
 
   /**
    * Get all effective permissions for a user.
@@ -145,14 +150,14 @@ export interface Authorization {
    * @example
    * await assignPermission('user-1', 'publish:post')
    */
-  assignPermission(userId: string, permissionName: string): Promise<void>;
+  assignPermission(userId: string, permissionName: TPermission): Promise<void>;
 
   /**
    * Revoke a directly-granted permission from a user.
    * Idempotent — no-op if not held directly.
    * Does not affect permissions inherited via roles.
    */
-  revokePermission(userId: string, permissionName: string): Promise<void>;
+  revokePermission(userId: string, permissionName: TPermission): Promise<void>;
 
   // ─── Role ↔ Permission ─────────────────────────────────────────────────────
 
@@ -164,18 +169,18 @@ export interface Authorization {
    * @example
    * await grantPermissionToRole('editor', 'edit:post')
    */
-  grantPermissionToRole(roleName: string, permissionName: string): Promise<void>;
+  grantPermissionToRole(roleName: TRole, permissionName: TPermission): Promise<void>;
 
   /**
    * Revoke a permission from a role.
    * Idempotent — no-op if the role does not hold the permission.
    */
-  revokePermissionFromRole(roleName: string, permissionName: string): Promise<void>;
+  revokePermissionFromRole(roleName: TRole, permissionName: TPermission): Promise<void>;
 
   /**
    * Get all permissions currently granted to a role.
    */
-  getRolePermissions(roleName: string): Promise<Permission[]>;
+  getRolePermissions(roleName: TRole): Promise<Permission[]>;
 }
 
 /**
@@ -194,6 +199,21 @@ export interface Authorization {
  * })
  *
  * @example
+ * // Typed permission/role vocabulary — optional, and fully backwards
+ * // compatible (both type parameters default to `string`). Gets you
+ * // autocomplete and a compile error on typos instead of a silent `false`
+ * // at runtime.
+ * type Permission = 'edit:post' | 'view:post' | 'user:manage'
+ * type Role = 'admin' | 'editor' | 'viewer'
+ *
+ * const auth = createAuthorization<Permission, Role>({
+ *   adapter: new PrismaAdapter(prisma),
+ * })
+ *
+ * await auth.can('user-1', 'edit:post') // ✅
+ * await auth.can('user-1', 'edti:post') // ❌ compile error
+ *
+ * @example
  * // Testing setup
  * import { createAuthorization, InMemoryAdapter } from '@arxjs/core'
  *
@@ -201,7 +221,10 @@ export interface Authorization {
  * const auth = createAuthorization({ adapter })
  * afterEach(() => adapter.reset())
  */
-export function createAuthorization(config: AuthorizationConfig): Authorization {
+export function createAuthorization<
+  TPermission extends string = string,
+  TRole extends string = string,
+>(config: AuthorizationConfig): Authorization<TPermission, TRole> {
   const engine = new AuthorizationEngine(config.adapter);
 
   return {

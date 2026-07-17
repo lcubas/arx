@@ -15,7 +15,7 @@ function assertValidName(name: string): void {
   if (name.trim().length === 0) throw new InvalidNameError(name);
 }
 
-export interface CreateRoleOptions {
+export interface CreateRoleOptions<TPermission extends string = string> {
   /**
    * What to do if the role already exists.
    * - `'throw'` (default): throw `RoleAlreadyExistsError`.
@@ -26,7 +26,7 @@ export interface CreateRoleOptions {
    * Permission names to grant to this role immediately after creation.
    * Throws `PermissionNotFoundError` if any permission does not exist.
    */
-  permissions?: string[];
+  permissions?: TPermission[];
 }
 
 export interface CreatePermissionOptions {
