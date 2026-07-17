@@ -132,6 +132,24 @@ const arx = createAuthorization({ adapter })
 afterEach(() => adapter.reset())
 ```
 
+## Testing custom adapters
+
+If you write your own `StorageAdapter` (or maintain one of the official ones), `@arxjs/core/testing` exports a shared conformance suite that verifies it satisfies the full contract — CRUD, idempotency of grant/revoke/assign/unassign, typed errors, and idempotency under concurrent calls.
+
+```ts
+// your-adapter.test.ts
+import { testStorageAdapterContract } from '@arxjs/core/testing'
+import { MyAdapter } from './my-adapter'
+
+testStorageAdapterContract({
+  create: () => new MyAdapter(),
+  // Optional: reset any shared/persistent storage before each test
+  reset: async () => { /* ... */ },
+})
+```
+
+Requires `vitest` (peer dependency, optional — only needed if you import this subpath).
+
 ## Available adapters
 
 | Package | ORM / Database |
