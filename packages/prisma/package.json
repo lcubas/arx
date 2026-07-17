@@ -49,6 +49,7 @@
   },
   "scripts": {
     "build": "tsdown src/index.ts --format esm,cjs --dts --sourcemap --no-splitting --clean --external @prisma/client --external @arxjs/core",
+    "generate": "prisma generate --schema=src/tests/schema.prisma",
     "pretest": "prisma generate --schema=src/tests/schema.prisma && prisma db push --schema=src/tests/schema.prisma --skip-generate --force-reset",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"

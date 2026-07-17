@@ -7,15 +7,20 @@
       "outputs": ["dist/**"],
       "inputs": ["src/**", "tsconfig.json", "package.json"]
     },
+    "generate": {
+      "cache": true,
+      "inputs": ["src/tests/schema.prisma"],
+      "outputs": ["src/tests/generated/**"]
+    },
     "test": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "generate"],
       "cache": false,
       "inputs": ["src/**", "vitest.config.ts"]
     },
     "typecheck": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "generate"],
       "outputs": [],
-      "inputs": ["src/**", "tsconfig.json"]
+      "inputs": ["src/**", "!src/**/generated/**", "tsconfig.json"]
     },
     "lint": {
       "outputs": [],
