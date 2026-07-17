@@ -1,6 +1,6 @@
 # @arxjs/prisma
 
-[Prisma](https://www.prisma.io/) adapter for [`@arxjs/core`](https://github.com/lcubas/arx/tree/main/packages/core). Supports any database Prisma supports — PostgreSQL, MySQL, SQLite, SQL Server, MongoDB, CockroachDB.
+[Prisma](https://www.prisma.io/) adapter for [`@arxjs/core`](https://github.com/lcubas/arxjs/tree/main/packages/core). Supports any database Prisma supports — PostgreSQL, MySQL, SQLite, SQL Server, MongoDB, CockroachDB.
 
 ## Installation
 
@@ -102,7 +102,7 @@ await arx.assignRole('user-1', 'editor')
 await arx.can('user-1', 'post:edit') // true
 ```
 
-See [`@arxjs/core`](https://github.com/lcubas/arx/tree/main/packages/core) for the full API reference.
+See [`@arxjs/core`](https://github.com/lcubas/arxjs/tree/main/packages/core) for the full API reference.
 
 ## How it works
 

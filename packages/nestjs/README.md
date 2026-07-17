@@ -1,6 +1,6 @@
 # @arxjs/nestjs
 
-NestJS module for [`@arxjs/core`](https://github.com/lcubas/arx/tree/main/packages/core). Provides an injectable `ArxService`, a route guard, and declarative decorators for permission and role checks.
+NestJS module for [`@arxjs/core`](https://github.com/lcubas/arxjs/tree/main/packages/core). Provides an injectable `ArxService`, a route guard, and declarative decorators for permission and role checks.
 
 ## Installation
 
@@ -93,7 +93,7 @@ import { DataSource } from 'typeorm'
   ],
   providers: [
     // 3. (Optional) protect every route globally
-    { provide: APP_GUARD, useClass: ArxGuard },
+    { provide: APP_GUARD, useExisting: ArxGuard },
   ],
 })
 export class AppModule {}
@@ -166,7 +166,7 @@ import { ArxGuard } from '@arxjs/nestjs'
 
 @Module({
   providers: [
-    { provide: APP_GUARD, useClass: ArxGuard },
+    { provide: APP_GUARD, useExisting: ArxGuard },
   ],
 })
 export class AppModule {}
@@ -195,7 +195,7 @@ export class PostsService {
 }
 ```
 
-`ArxService` exposes the full `@arxjs/core` API — see [`@arxjs/core` docs](https://github.com/lcubas/arx/tree/main/packages/core#api) for the complete reference.
+`ArxService` exposes the full `@arxjs/core` API — see [`@arxjs/core` docs](https://github.com/lcubas/arxjs/tree/main/packages/core#api) for the complete reference.
 
 ## Peer dependencies
 

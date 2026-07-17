@@ -10,7 +10,7 @@ async function bootstrap() {
   const seed = app.get(SeedService);
   await seed.run();
 
-  await app.listen(process.env.PORT ?? 3000, () => {
+  await app.listen(3000, () => {
     console.log('\n🚀 ARX + NestJS + TypeORM example running at http://localhost:3000/api');
   });
 }

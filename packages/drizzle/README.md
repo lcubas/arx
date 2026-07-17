@@ -1,6 +1,6 @@
 # @arxjs/drizzle
 
-[Drizzle ORM](https://orm.drizzle.team/) adapter for [`@arxjs/core`](https://github.com/lcubas/arx/tree/main/packages/core). Supports PostgreSQL, MySQL, and SQLite via dialect-specific adapters.
+[Drizzle ORM](https://orm.drizzle.team/) adapter for [`@arxjs/core`](https://github.com/lcubas/arxjs/tree/main/packages/core). Supports PostgreSQL, MySQL, and SQLite via dialect-specific adapters.
 
 ## Installation
 
@@ -114,7 +114,7 @@ npx drizzle-kit push
 
 ### Option B — manual SQL
 
-If you manage your own migrations, see the [database schema reference](https://github.com/lcubas/arx/tree/main/packages/core#database-schema) in `@arxjs/core`. It contains a database-agnostic diagram of all five tables with their columns and constraints.
+If you manage your own migrations, see the [database schema reference](https://github.com/lcubas/arxjs/tree/main/packages/core#database-schema) in `@arxjs/core`. It contains a database-agnostic diagram of all five tables with their columns and constraints.
 
 ## Usage
 
@@ -124,7 +124,7 @@ await arx.assignRole('user-1', 'editor')
 await arx.can('user-1', 'post:edit') // true
 ```
 
-See [`@arxjs/core`](https://github.com/lcubas/arx/tree/main/packages/core) for the full API reference.
+See [`@arxjs/core`](https://github.com/lcubas/arxjs/tree/main/packages/core) for the full API reference.
 
 ## Schema reference
 

@@ -1,6 +1,6 @@
 # @arxjs/typeorm
 
-[TypeORM](https://typeorm.io/) adapter for [`@arxjs/core`](https://github.com/lcubas/arx/tree/main/packages/core). Supports any database TypeORM supports — PostgreSQL, MySQL, MariaDB, SQLite, SQL Server, and more.
+[TypeORM](https://typeorm.io/) adapter for [`@arxjs/core`](https://github.com/lcubas/arxjs/tree/main/packages/core). Supports any database TypeORM supports — PostgreSQL, MySQL, MariaDB, SQLite, SQL Server, and more.
 
 ## Installation
 
@@ -107,7 +107,7 @@ await arx.assignRole('user-1', 'editor')
 await arx.can('user-1', 'post:edit') // true
 ```
 
-See [`@arxjs/core`](https://github.com/lcubas/arx/tree/main/packages/core) for the full API reference.
+See [`@arxjs/core`](https://github.com/lcubas/arxjs/tree/main/packages/core) for the full API reference.
 
 ## Tables created
 
@@ -119,11 +119,11 @@ See [`@arxjs/core`](https://github.com/lcubas/arx/tree/main/packages/core) for t
 | `arx_user_roles` | User → role assignments |
 | `arx_user_permissions` | Direct user → permission grants |
 
-Tables are prefixed with `arx_` to avoid conflicts with your own entities. See the [database schema reference](https://github.com/lcubas/arx/tree/main/packages/core#database-schema) in `@arxjs/core` for the full column and constraint details.
+Tables are prefixed with `arx_` to avoid conflicts with your own entities. See the [database schema reference](https://github.com/lcubas/arxjs/tree/main/packages/core#database-schema) in `@arxjs/core` for the full column and constraint details.
 
 ## NestJS integration
 
-Use together with [`@arxjs/nestjs`](https://github.com/lcubas/arx/tree/main/packages/nestjs) and `@nestjs/typeorm`:
+Use together with [`@arxjs/nestjs`](https://github.com/lcubas/arxjs/tree/main/packages/nestjs) and `@nestjs/typeorm`:
 
 ```ts
 // app.module.ts
