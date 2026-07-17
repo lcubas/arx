@@ -17,8 +17,11 @@ import {
 } from './entities';
 
 // TypeORM wraps all DB errors in QueryFailedError. The `code` field holds the
-// driver-specific error code — we check all common unique-constraint codes so
-// the adapter works across PostgreSQL, MySQL, SQLite, and SQL Server.
+// driver-specific error code — we check all common unique/primary-key-constraint
+// codes so the adapter works across PostgreSQL, MySQL, SQLite, and SQL Server.
+// SQLite (and SQL Server) report a *different* code for a composite primary-key
+// violation (the junction tables) than for a plain UNIQUE column violation
+// (roles.name / permissions.name) — both must be covered.
 function isUniqueConstraintError(err: unknown): boolean {
   if (!(err instanceof QueryFailedError)) return false;
   const e = err as QueryFailedError & {
@@ -29,10 +32,12 @@ function isUniqueConstraintError(err: unknown): boolean {
   return (
     e.code === '23505' || // PostgreSQL
     e.code === 'ER_DUP_ENTRY' || // MySQL / MariaDB
-    e.code === 'SQLITE_CONSTRAINT' || // SQLite
-    e.code === 'SQLITE_CONSTRAINT_UNIQUE' || // SQLite (newer)
+    e.code === 'SQLITE_CONSTRAINT' || // SQLite (generic/older)
+    e.code === 'SQLITE_CONSTRAINT_UNIQUE' || // SQLite — UNIQUE column violation
+    e.code === 'SQLITE_CONSTRAINT_PRIMARYKEY' || // SQLite — PRIMARY KEY violation
     e.errno === 1062 || // MySQL alternate
-    e.number === 2627 // SQL Server
+    e.number === 2627 || // SQL Server — PRIMARY KEY violation
+    e.number === 2601 // SQL Server — duplicate key row in unique index
   );
 }
 
@@ -126,10 +131,11 @@ export class TypeOrmAdapter implements StorageAdapter {
     if (!permission) throw new PermissionNotFoundError(permissionName);
 
     const repo = this.dataSource.getRepository(ArxRolePermission);
-    const existing = await repo.findOneBy({ roleId: role.id, permissionId: permission.id });
 
-    if (!existing) {
+    try {
       await repo.save(repo.create({ roleId: role.id, permissionId: permission.id }));
+    } catch (err) {
+      if (!isUniqueConstraintError(err)) throw err; // already granted — idempotent
     }
   }
 
@@ -165,10 +171,11 @@ export class TypeOrmAdapter implements StorageAdapter {
     if (!role) throw new RoleNotFoundError(roleName);
 
     const repo = this.dataSource.getRepository(ArxUserRole);
-    const existing = await repo.findOneBy({ userId, roleId: role.id });
 
-    if (!existing) {
+    try {
       await repo.save(repo.create({ userId, roleId: role.id }));
+    } catch (err) {
+      if (!isUniqueConstraintError(err)) throw err; // already assigned — idempotent
     }
   }
 
@@ -195,10 +202,11 @@ export class TypeOrmAdapter implements StorageAdapter {
     if (!permission) throw new PermissionNotFoundError(permissionName);
 
     const repo = this.dataSource.getRepository(ArxUserPermission);
-    const existing = await repo.findOneBy({ userId, permissionId: permission.id });
 
-    if (!existing) {
+    try {
       await repo.save(repo.create({ userId, permissionId: permission.id }));
+    } catch (err) {
+      if (!isUniqueConstraintError(err)) throw err; // already granted — idempotent
     }
   }
 

@@ -57,6 +57,24 @@ export type AnyDrizzleDB = Record<string, any>;
 type RoleRow = { id: string; name: string; createdAt: Date };
 type PermissionRow = { id: string; name: string; createdAt: Date };
 
+// Drizzle passes driver errors through largely unchanged, and the adapter is
+// dialect-agnostic (it doesn't know whether `db` wraps node-postgres,
+// postgres.js, mysql2, better-sqlite3, or libsql). We check the common
+// unique/primary-key-violation codes across all of them so a single insert
+// path works everywhere, instead of hand-rolling a find-then-insert race.
+function isUniqueConstraintError(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false;
+  const e = err as { code?: string; errno?: number };
+  return (
+    e.code === '23505' || // PostgreSQL (node-postgres, postgres.js)
+    e.code === 'ER_DUP_ENTRY' || // MySQL / MariaDB (mysql2)
+    e.errno === 1062 || // MySQL alternate
+    e.code === 'SQLITE_CONSTRAINT_UNIQUE' || // SQLite (better-sqlite3, libsql)
+    e.code === 'SQLITE_CONSTRAINT_PRIMARYKEY' ||
+    e.code === 'SQLITE_CONSTRAINT' // SQLite (generic/older)
+  );
+}
+
 function toRole(row: RoleRow): Role {
   return { id: row.id, name: row.name, createdAt: row.createdAt };
 }
@@ -80,13 +98,15 @@ export abstract class DrizzleAdapter implements StorageAdapter {
   ) {}
 
   async createRole(name: string): Promise<Role> {
-    const existing = await this.findRole(name);
-    if (existing) throw new RoleAlreadyExistsError(name);
-
     const id = randomUUID();
     const createdAt = new Date();
 
-    await this.db.insert(this.tables.roles).values({ id, name, createdAt });
+    try {
+      await this.db.insert(this.tables.roles).values({ id, name, createdAt });
+    } catch (err) {
+      if (isUniqueConstraintError(err)) throw new RoleAlreadyExistsError(name);
+      throw err;
+    }
 
     return { id, name, createdAt };
   }
@@ -110,13 +130,15 @@ export abstract class DrizzleAdapter implements StorageAdapter {
   }
 
   async createPermission(name: string): Promise<Permission> {
-    const existing = await this.findPermission(name);
-    if (existing) throw new PermissionAlreadyExistsError(name);
-
     const id = randomUUID();
     const createdAt = new Date();
 
-    await this.db.insert(this.tables.permissions).values({ id, name, createdAt });
+    try {
+      await this.db.insert(this.tables.permissions).values({ id, name, createdAt });
+    } catch (err) {
+      if (isUniqueConstraintError(err)) throw new PermissionAlreadyExistsError(name);
+      throw err;
+    }
 
     return { id, name, createdAt };
   }
@@ -148,21 +170,12 @@ export abstract class DrizzleAdapter implements StorageAdapter {
     if (!role) throw new RoleNotFoundError(roleName);
     if (!permission) throw new PermissionNotFoundError(permissionName);
 
-    const [existing] = await this.db
-      .select({ roleId: this.tables.rolePermissions.roleId })
-      .from(this.tables.rolePermissions)
-      .where(
-        and(
-          eq(this.tables.rolePermissions.roleId, role.id),
-          eq(this.tables.rolePermissions.permissionId, permission.id),
-        ),
-      )
-      .limit(1);
-
-    if (!existing) {
+    try {
       await this.db
         .insert(this.tables.rolePermissions)
         .values({ roleId: role.id, permissionId: permission.id, assignedAt: new Date() });
+    } catch (err) {
+      if (!isUniqueConstraintError(err)) throw err; // already granted — idempotent
     }
   }
 
@@ -208,18 +221,12 @@ export abstract class DrizzleAdapter implements StorageAdapter {
     const role = await this.findRole(roleName);
     if (!role) throw new RoleNotFoundError(roleName);
 
-    const [existing] = await this.db
-      .select({ userId: this.tables.userRoles.userId })
-      .from(this.tables.userRoles)
-      .where(
-        and(eq(this.tables.userRoles.userId, userId), eq(this.tables.userRoles.roleId, role.id)),
-      )
-      .limit(1);
-
-    if (!existing) {
+    try {
       await this.db
         .insert(this.tables.userRoles)
         .values({ userId, roleId: role.id, assignedAt: new Date() });
+    } catch (err) {
+      if (!isUniqueConstraintError(err)) throw err; // already assigned — idempotent
     }
   }
 
@@ -252,21 +259,12 @@ export abstract class DrizzleAdapter implements StorageAdapter {
     const permission = await this.findPermission(permissionName);
     if (!permission) throw new PermissionNotFoundError(permissionName);
 
-    const [existing] = await this.db
-      .select({ userId: this.tables.userPermissions.userId })
-      .from(this.tables.userPermissions)
-      .where(
-        and(
-          eq(this.tables.userPermissions.userId, userId),
-          eq(this.tables.userPermissions.permissionId, permission.id),
-        ),
-      )
-      .limit(1);
-
-    if (!existing) {
+    try {
       await this.db
         .insert(this.tables.userPermissions)
         .values({ userId, permissionId: permission.id, assignedAt: new Date() });
+    } catch (err) {
+      if (!isUniqueConstraintError(err)) throw err; // already granted — idempotent
     }
   }
 

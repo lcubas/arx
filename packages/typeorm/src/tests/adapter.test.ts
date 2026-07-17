@@ -200,4 +200,46 @@ describe('TypeOrmAdapter', () => {
       expect(await adapter.getEffectivePermissions('user-1')).toEqual([]);
     });
   });
+
+  describe('concurrency', () => {
+    it('granting the same role-permission concurrently is idempotent, never throws', async () => {
+      await adapter.createRole('editor');
+      await adapter.createPermission('edit:post');
+
+      await expect(
+        Promise.all([
+          adapter.grantPermissionToRole('editor', 'edit:post'),
+          adapter.grantPermissionToRole('editor', 'edit:post'),
+        ]),
+      ).resolves.toBeDefined();
+
+      expect(await adapter.getPermissionsForRole('editor')).toHaveLength(1);
+    });
+
+    it('assigning the same role to a user concurrently is idempotent, never throws', async () => {
+      await adapter.createRole('editor');
+
+      await expect(
+        Promise.all([
+          adapter.assignRoleToUser('user-1', 'editor'),
+          adapter.assignRoleToUser('user-1', 'editor'),
+        ]),
+      ).resolves.toBeDefined();
+
+      expect(await adapter.getRolesForUser('user-1')).toHaveLength(1);
+    });
+
+    it('granting the same direct permission concurrently is idempotent, never throws', async () => {
+      await adapter.createPermission('edit:post');
+
+      await expect(
+        Promise.all([
+          adapter.grantPermissionToUser('user-1', 'edit:post'),
+          adapter.grantPermissionToUser('user-1', 'edit:post'),
+        ]),
+      ).resolves.toBeDefined();
+
+      expect(await adapter.getDirectPermissionsForUser('user-1')).toHaveLength(1);
+    });
+  });
 });
